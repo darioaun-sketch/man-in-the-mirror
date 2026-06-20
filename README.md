@@ -1,5 +1,3 @@
-# man-in-the-mirror
-If you wanna make the world a better place, take a look at yourself and then make a change.
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -20,13 +18,26 @@ If you wanna make the world a better place, take a look at yourself and then mak
     --txt3: #a0a0a0;
     --radius: 12px;
     --radius-sm: 8px;
-    --fe: #534AB7;
-    --cuerpo: #0F6E56;
-    --mente: #185FA5;
-    --crear: #854F0B;
-    --mision: #993C1D;
-    --rel: #993556;
-    --car: #444441;
+    --fe: #7B72E9;
+    --cuerpo: #2DB88F;
+    --mente: #3A8FE8;
+    --crear: #E8931A;
+    --mision: #E05A32;
+    --rel: #E05080;
+    --car: #888884;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0f0f0f;
+      --bg2: #1a1a1a;
+      --bg3: #222222;
+      --border: rgba(255,255,255,0.07);
+      --border2: rgba(255,255,255,0.12);
+      --txt: #f0f0f0;
+      --txt2: #999999;
+      --txt3: #555555;
+    }
   }
 
   body {
