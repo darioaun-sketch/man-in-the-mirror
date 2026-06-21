@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Man in the Mirror</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -41,14 +44,19 @@
   }
 
   body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     background: var(--bg);
     color: var(--txt);
     font-size: 13px;
+    font-weight: 300;
     line-height: 1.5;
     padding: 24px 20px 40px;
     max-width: 680px;
     margin: 0 auto;
+  }
+
+  .serif {
+    font-family: 'Cormorant Garamond', Georgia, serif;
   }
 
   /* ── header ── */
@@ -61,36 +69,44 @@
   .header-label {
     font-size: 10px;
     color: var(--txt3);
-    letter-spacing: 0.1em;
+    letter-spacing: 0.18em;
     text-transform: uppercase;
     margin-bottom: 5px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
   }
   .header-title {
-    font-size: 22px;
-    font-weight: 500;
-    letter-spacing: -0.3px;
+    font-size: 36px;
+    font-weight: 300;
+    letter-spacing: -0.5px;
     color: var(--txt);
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    line-height: 1.1;
   }
   .header-sub {
-    font-size: 12px;
+    font-size: 11px;
     color: var(--txt3);
-    margin-top: 3px;
+    margin-top: 5px;
+    font-weight: 300;
+    letter-spacing: 0.02em;
   }
   .header-score {
     text-align: right;
   }
   .header-score-num {
-    font-size: 34px;
-    font-weight: 500;
-    letter-spacing: -1px;
+    font-size: 42px;
+    font-weight: 300;
+    letter-spacing: -2px;
     line-height: 1;
+    font-family: 'Cormorant Garamond', Georgia, serif;
   }
   .header-score-label {
     font-size: 10px;
     color: var(--txt3);
     margin-top: 3px;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.1em;
+    font-weight: 400;
   }
 
   /* ── tabs ── */
@@ -104,13 +120,14 @@
   .tab {
     padding: 5px 14px;
     border-radius: 20px;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 400;
     cursor: pointer;
     border: 0.5px solid var(--border2);
     background: transparent;
     color: var(--txt2);
-    font-family: inherit;
+    font-family: 'Inter', sans-serif;
+    letter-spacing: 0.04em;
     transition: all .15s;
   }
   .tab:hover { background: var(--bg2); }
@@ -141,14 +158,16 @@
     font-size: 10px;
     color: var(--txt3);
     text-transform: uppercase;
-    letter-spacing: 0.06em;
-    margin-bottom: 5px;
+    letter-spacing: 0.08em;
+    margin-bottom: 6px;
+    font-weight: 400;
   }
   .metric-val {
-    font-size: 15px;
-    font-weight: 500;
+    font-size: 20px;
+    font-weight: 300;
     color: var(--txt);
     line-height: 1.3;
+    font-family: 'Cormorant Garamond', Georgia, serif;
   }
 
   /* ── card ── */
@@ -160,10 +179,12 @@
     margin-bottom: 10px;
   }
   .card-label {
-    font-size: 11px;
+    font-size: 10px;
     color: var(--txt3);
     margin-bottom: 12px;
-    letter-spacing: 0.02em;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-weight: 400;
   }
 
   /* ── bar chart ── */
@@ -215,8 +236,9 @@
     margin-bottom: 5px;
   }
   .area-name {
-    font-size: 12px;
-    font-weight: 500;
+    font-size: 14px;
+    font-weight: 400;
+    font-family: 'Cormorant Garamond', Georgia, serif;
     color: var(--txt);
     max-width: 100px;
     line-height: 1.35;
@@ -224,6 +246,7 @@
   .area-trend {
     font-size: 10px;
     margin-top: 3px;
+    font-weight: 300;
   }
 
   /* ── ring svg ── */
@@ -240,8 +263,10 @@
     margin-bottom: 12px;
   }
   .tracker-title {
-    font-size: 13px;
-    font-weight: 500;
+    font-size: 20px;
+    font-weight: 400;
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    letter-spacing: 0.01em;
   }
   .btn-add {
     font-size: 11px;
@@ -273,7 +298,7 @@
   }
   .day-header:hover { background: var(--bg2); }
   .day-left { display: flex; align-items: center; gap: 10px; }
-  .day-name { font-size: 14px; font-weight: 500; }
+  .day-name { font-size: 18px; font-weight: 400; font-family: 'Cormorant Garamond', Georgia, serif; }
   .day-dots { display: flex; gap: 3px; align-items: center; }
   .day-dot-bar {
     width: 4px;
@@ -448,7 +473,8 @@
 <div class="tabs">
   <button class="tab active" data-tab="resumen">Resumen</button>
   <button class="tab" data-tab="areas">Áreas</button>
-  <button class="tab" data-tab="tracker">Tracker</button>
+  <button class="tab" data-tab="habitos">Hábitos</button>
+  <button class="tab" data-tab="tracker">Reflexión</button>
   <button class="tab" data-tab="heatmap">Heatmap</button>
 </div>
 
@@ -483,10 +509,19 @@
   <div class="areas-grid" id="areas-grid"></div>
 </div>
 
-<!-- TRACKER -->
+<!-- HÁBITOS -->
+<div class="panel" id="panel-habitos">
+  <div class="tracker-header">
+    <div class="tracker-title">Hábitos del día</div>
+    <div style="font-size:11px;color:var(--txt3)">Marca al completar</div>
+  </div>
+  <div id="habitos-grid"></div>
+</div>
+
+<!-- TRACKER REFLEXIÓN -->
 <div class="panel" id="panel-tracker">
   <div class="tracker-header">
-    <div class="tracker-title">Respuestas nocturnas</div>
+    <div class="tracker-title">Reflexión nocturna</div>
     <button class="btn-add" id="btn-add-day">+ Nuevo día</button>
   </div>
   <div class="new-entry" id="new-entry-form">
@@ -512,42 +547,118 @@
 </div>
 
 <script>
+const SHEET_URL = 'https://script.google.com/macros/s/AKfycbw1mzp5cYddTLKVyS04LUqSOOHOkxcjhznLNBblBly6U94FTRFBtYeg6BiqJOR2RMUbow/exec';
+
 const AREAS = [
-  { k:"fe",     label:"Fe & espíritu",         color:"#534AB7" },
-  { k:"cuerpo", label:"Cuerpo & salud",         color:"#0F6E56" },
-  { k:"mente",  label:"Mente & aprendizaje",    color:"#185FA5" },
-  { k:"crear",  label:"Creatividad & talentos", color:"#854F0B" },
-  { k:"mision", label:"Misión & negocio",       color:"#993C1D" },
-  { k:"rel",    label:"Relaciones & familia",   color:"#993556" },
-  { k:"car",    label:"Carácter & disciplina",  color:"#444441" },
+  { k:"fe",     label:"Fe & espíritu",         color:"#7B72E9" },
+  { k:"mente",  label:"Mente & aprendizaje",   color:"#3A8FE8" },
+  { k:"mision", label:"Misión & negocio",      color:"#E05A32" },
+  { k:"cuerpo", label:"Cuerpo & salud",        color:"#2DB88F" },
+  { k:"car",    label:"Carácter & disciplina", color:"#888884" },
 ];
 
+// ── Hábitos reales por área ──
+const HABITOS = {
+  fe: [
+    "Leer la Biblia 30 min",
+    "Reflexión nocturna (agradecimientos + qué mejorar)",
+    "Ver Smallville",
+  ],
+  mente: [
+    "Leer You Can't Hurt Me 30 min",
+    "Estudiar Heroes Academia 1 hora",
+    "Medir cortisol (1–10, 10 = bajo cortisol)",
+  ],
+  mision: [
+    "Trabajar 2.5h sesión 1",
+    "Trabajar 2.5h sesión 2",
+    "Hopecast",
+    "Ayudar en casa (cocinar o arreglar)",
+  ],
+  cuerpo: [
+    "Entrenar",
+    "4 litros de agua",
+    "130g proteína",
+    "250g carbohidratos",
+    "55g grasas",
+    "Ducha fría",
+    "Dormir 8–9 horas",
+    "Medir energía (1–10)",
+  ],
+  car: [
+    "Cumplir horario del día",
+    "Mantener espacio limpio y ordenado",
+    "Evitar distracciones innecesarias",
+  ],
+};
+
+// ── Preguntas de reflexión (3 por área) ──
 const QS = [
-  { q:"¿Puse a Dios primero?",      area:"fe"     },
-  { q:"¿Entrené mi cuerpo?",        area:"cuerpo" },
-  { q:"¿Fortalecí mi mente?",       area:"mente"  },
-  { q:"¿Aprendí algo?",             area:"mente"  },
-  { q:"¿Creé algo?",                area:"crear"  },
-  { q:"¿Serví a alguien?",          area:"rel"    },
-  { q:"¿Amé a mi familia?",         area:"rel"    },
-  { q:"¿Fui íntegro?",              area:"car"    },
-  { q:"¿Cumplí mi palabra?",        area:"car"    },
-  { q:"¿Avancé hacia mi misión?",   area:"mision" },
+  // Fe & espíritu
+  { q:"¿Conecté con Dios hoy?",              area:"fe"     },
+  { q:"¿Fui agradecido durante el día?",     area:"fe"     },
+  { q:"¿Viví con propósito y paz interior?", area:"fe"     },
+  // Mente & aprendizaje
+  { q:"¿Aprendí algo nuevo hoy?",            area:"mente"  },
+  { q:"¿Sostuve mi cortisol bajo?",          area:"mente"  },
+  { q:"¿Mi mente estuvo enfocada y clara?",  area:"mente"  },
+  // Misión & negocio
+  { q:"¿Completé mis 5 horas de trabajo?",   area:"mision" },
+  { q:"¿Avancé en Hopecast hoy?",            area:"mision" },
+  { q:"¿Aportó valor mi trabajo de hoy?",    area:"mision" },
+  // Cuerpo & salud
+  { q:"¿Entrené con intensidad?",            area:"cuerpo" },
+  { q:"¿Cumplí mi nutrición del día?",       area:"cuerpo" },
+  { q:"¿Mi energía fue alta hoy (7+/10)?",   area:"cuerpo" },
+  // Carácter & disciplina
+  { q:"¿Cumplí mis horarios?",               area:"car"    },
+  { q:"¿Fui íntegro cuando nadie miraba?",   area:"car"    },
+  { q:"¿Cumplí todo lo que prometí?",        area:"car"    },
 ];
 
-const QS_AREA = { fe:["¿Puse a Dios primero?"], cuerpo:["¿Entrené mi cuerpo?"], mente:["¿Fortalecí mi mente?","¿Aprendí algo?"], crear:["¿Creé algo?"], mision:["¿Avancé hacia mi misión?"], rel:["¿Serví a alguien?","¿Amé a mi familia?"], car:["¿Fui íntegro?","¿Cumplí mi palabra?"] };
+const QS_AREA = {
+  fe:     QS.filter(q=>q.area==="fe"    ).map(q=>q.q),
+  mente:  QS.filter(q=>q.area==="mente" ).map(q=>q.q),
+  mision: QS.filter(q=>q.area==="mision").map(q=>q.q),
+  cuerpo: QS.filter(q=>q.area==="cuerpo").map(q=>q.q),
+  car:    QS.filter(q=>q.area==="car"   ).map(q=>q.q),
+};
 
 const VAL = { "Sí":2, "Parcial":1, "No":0 };
+let DATA = [];
+let LOADING = true;
 
-let DATA = [
-  { d:"Lun", "¿Puse a Dios primero?":"Sí","¿Entrené mi cuerpo?":"Sí","¿Fortalecí mi mente?":"Sí","¿Aprendí algo?":"Sí","¿Creé algo?":"Parcial","¿Serví a alguien?":"Sí","¿Amé a mi familia?":"Sí","¿Fui íntegro?":"Sí","¿Cumplí mi palabra?":"Parcial","¿Avancé hacia mi misión?":"Sí" },
-  { d:"Mar", "¿Puse a Dios primero?":"Sí","¿Entrené mi cuerpo?":"No","¿Fortalecí mi mente?":"Sí","¿Aprendí algo?":"Sí","¿Creé algo?":"Sí","¿Serví a alguien?":"Parcial","¿Amé a mi familia?":"Sí","¿Fui íntegro?":"Sí","¿Cumplí mi palabra?":"Sí","¿Avancé hacia mi misión?":"Parcial" },
-  { d:"Mié", "¿Puse a Dios primero?":"Sí","¿Entrené mi cuerpo?":"Sí","¿Fortalecí mi mente?":"Parcial","¿Aprendí algo?":"Parcial","¿Creé algo?":"Sí","¿Serví a alguien?":"Sí","¿Amé a mi familia?":"Parcial","¿Fui íntegro?":"Sí","¿Cumplí mi palabra?":"Sí","¿Avancé hacia mi misión?":"Sí" },
-  { d:"Jue", "¿Puse a Dios primero?":"Parcial","¿Entrené mi cuerpo?":"Sí","¿Fortalecí mi mente?":"Sí","¿Aprendí algo?":"Sí","¿Creé algo?":"No","¿Serví a alguien?":"Sí","¿Amé a mi familia?":"Sí","¿Fui íntegro?":"Parcial","¿Cumplí mi palabra?":"Sí","¿Avancé hacia mi misión?":"Sí" },
-  { d:"Vie", "¿Puse a Dios primero?":"Sí","¿Entrené mi cuerpo?":"Sí","¿Fortalecí mi mente?":"Sí","¿Aprendí algo?":"Sí","¿Creé algo?":"Sí","¿Serví a alguien?":"Sí","¿Amé a mi familia?":"Sí","¿Fui íntegro?":"Sí","¿Cumplí mi palabra?":"Sí","¿Avancé hacia mi misión?":"Sí" },
-  { d:"Sáb", "¿Puse a Dios primero?":"Sí","¿Entrené mi cuerpo?":"Parcial","¿Fortalecí mi mente?":"Parcial","¿Aprendí algo?":"Sí","¿Creé algo?":"Parcial","¿Serví a alguien?":"Sí","¿Amé a mi familia?":"Sí","¿Fui íntegro?":"Sí","¿Cumplí mi palabra?":"Parcial","¿Avancé hacia mi misión?":"Parcial" },
-  { d:"Dom", "¿Puse a Dios primero?":"Sí","¿Entrené mi cuerpo?":"No","¿Fortalecí mi mente?":"Sí","¿Aprendí algo?":"Sí","¿Creé algo?":"Parcial","¿Serví a alguien?":"Sí","¿Amé a mi familia?":"Sí","¿Fui íntegro?":"Sí","¿Cumplí mi palabra?":"Sí","¿Avancé hacia mi misión?":"Parcial" },
-];
+// ── Google Sheets ──
+async function loadFromSheet() {
+  try {
+    const res = await fetch(SHEET_URL);
+    const rows = await res.json();
+    DATA = rows.map(r => {
+      const obj = { d: r['Día'] || r['Dia'] || '' };
+      QS.forEach(({q}) => { obj[q] = r[q] || null; });
+      return obj;
+    }).filter(r => r.d);
+    LOADING = false;
+    render();
+  } catch(e) {
+    LOADING = false;
+    document.getElementById('sub-label').textContent = 'Error cargando datos — revisa la conexión';
+    render();
+  }
+}
+
+async function saveToSheet(entry) {
+  const body = { dia: entry.d, fecha: new Date().toISOString().split('T')[0] };
+  QS.forEach(({q}) => { body[q] = entry[q] || ''; });
+  try {
+    await fetch(SHEET_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+  } catch(e) { console.error('Error guardando:', e); }
+}
 
 // ── Calculations ──
 function mean(arr){ const v=arr.filter(x=>x!=null); return v.length ? v.reduce((a,b)=>a+b,0)/v.length : null; }
@@ -556,7 +667,7 @@ function dayScore(row){ const vs=QS.map(({q})=>VAL[row[q]]??null).filter(v=>v!=n
 function areaScore(row,ak){ const qs=QS_AREA[ak]; const vs=qs.map(q=>VAL[row[q]]??null).filter(v=>v!=null); return vs.length?p(mean(vs)):null; }
 function areaAvg(ak){ const vs=DATA.map(r=>areaScore(r,ak)).filter(v=>v!=null); return vs.length?Math.round(mean(vs)):null; }
 function globalAvg(){ const vs=DATA.map(dayScore).filter(v=>v!=null); return vs.length?Math.round(mean(vs)):null; }
-function scoreColor(s){ return s>=80?"#0F6E56":s>=60?"#854F0B":"#993C1D"; }
+function scoreColor(s){ return s>=80?"#2DB88F":s>=60?"#E8931A":"#E05A32"; }
 function hex2alpha(hex,a){ const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16); return `rgba(${r},${g},${b},${a})`; }
 
 // ── Render helpers ──
@@ -564,13 +675,16 @@ function ring(score, color, r){
   r = r||28;
   const sz=(r+5)*2, cx=r+5, circ=2*Math.PI*r;
   const dash = score==null ? 0 : (score/100)*circ;
+  const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const textColor = isDark ? '#f0f0f0' : '#1a1a1a';
+  const trackColor = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.07)';
   return `<svg width="${sz}" height="${sz}" viewBox="0 0 ${sz} ${sz}" class="ring-wrap">
-    <circle cx="${cx}" cy="${cx}" r="${r}" fill="none" stroke="rgba(0,0,0,0.07)" stroke-width="3.5"/>
+    <circle cx="${cx}" cy="${cx}" r="${r}" fill="none" stroke="${trackColor}" stroke-width="3.5"/>
     <circle cx="${cx}" cy="${cx}" r="${r}" fill="none" stroke="${color}" stroke-width="3.5"
       stroke-dasharray="${dash.toFixed(1)} ${circ.toFixed(1)}" stroke-linecap="round"
       transform="rotate(-90 ${cx} ${cx})" style="transition:stroke-dasharray .5s ease"/>
     <text x="${cx}" y="${cx}" text-anchor="middle" dominant-baseline="central"
-      font-size="${Math.round(r*.52)}" font-weight="500" fill="#1a1a1a">${score!=null?score+'%':'—'}</text>
+      font-size="${Math.round(r*.52)}" font-weight="500" fill="${textColor}">${score!=null?score+'%':'—'}</text>
   </svg>`;
 }
 
@@ -600,27 +714,69 @@ document.querySelectorAll('.tab').forEach(btn=>{
 
 function activeTab(){ return document.querySelector('.tab.active').dataset.tab; }
 
+// ── Hábitos locales (solo sesión, no se guardan en Sheet) ──
+let HABITOS_CHECK = {};
+function toggleHabito(area, idx){
+  const key = area+'_'+idx;
+  HABITOS_CHECK[key] = !HABITOS_CHECK[key];
+  renderHabitos();
+}
+
+function renderHabitos(){
+  const grid = document.getElementById('habitos-grid');
+  grid.innerHTML = AREAS.map(a=>{
+    const lista = HABITOS[a.k] || [];
+    const completados = lista.filter((_,i)=>HABITOS_CHECK[a.k+'_'+i]).length;
+    const pctH = lista.length ? Math.round((completados/lista.length)*100) : 0;
+    const items = lista.map((h,i)=>{
+      const checked = HABITOS_CHECK[a.k+'_'+i];
+      return `<div onclick="toggleHabito('${a.k}',${i})" style="display:flex;align-items:center;gap:10px;padding:8px 0;cursor:pointer;border-bottom:0.5px solid var(--border);user-select:none;" class="habito-row">
+        <div style="width:18px;height:18px;border-radius:5px;border:1.5px solid ${checked?a.color:'var(--border2)'};background:${checked?a.color:'transparent'};flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s;">
+          ${checked?`<svg width="10" height="10" viewBox="0 0 10 10"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>`:''}
+        </div>
+        <div style="font-size:12px;color:${checked?'var(--txt3)':'var(--txt)'};text-decoration:${checked?'line-through':'none'};transition:all .15s;">${h}</div>
+      </div>`;
+    }).join('');
+    return `<div class="card" style="margin-bottom:8px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div style="width:7px;height:7px;border-radius:50%;background:${a.color};flex-shrink:0;"></div>
+          <div style="font-size:12px;font-weight:500;color:var(--txt);">${a.label}</div>
+        </div>
+        <div style="font-size:11px;color:${pctH===100?a.color:'var(--txt3)'};">${completados}/${lista.length}</div>
+      </div>
+      <div style="height:3px;background:var(--bg3);border-radius:2px;margin-bottom:12px;">
+        <div style="height:3px;background:${a.color};border-radius:2px;width:${pctH}%;transition:width .3s;"></div>
+      </div>
+      ${items}
+    </div>`;
+  }).join('');
+}
+
 // ── Master render ──
 function render(){
   renderHeader();
+  if(LOADING) return;
   const t = activeTab();
-  if(t==='resumen') renderResumen();
-  if(t==='areas') renderAreas();
-  if(t==='tracker') renderTracker();
-  if(t==='heatmap') renderHeatmap();
+  if(t==='resumen')  renderResumen();
+  if(t==='areas')    renderAreas();
+  if(t==='habitos')  renderHabitos();
+  if(t==='tracker')  renderTracker();
+  if(t==='heatmap')  renderHeatmap();
 }
 
 function renderHeader(){
   const g = globalAvg();
   const el = document.getElementById('global-score');
+  if(LOADING){ el.textContent='…'; el.style.color='var(--txt3)'; document.getElementById('sub-label').textContent='Cargando datos…'; return; }
   el.textContent = g!=null ? g+'%' : '—';
-  el.style.color = g!=null ? scoreColor(g) : '#a0a0a0';
-  document.getElementById('sub-label').textContent = DATA.length+' días registrados esta semana';
+  el.style.color = g!=null ? scoreColor(g) : 'var(--txt3)';
+  document.getElementById('sub-label').textContent = DATA.length+' días registrados';
 }
 
 function renderResumen(){
+  if(!DATA.length){ document.getElementById('daily-bars').innerHTML='<div style="color:var(--txt3);font-size:12px;padding:20px 0">Sin datos aún — agrega tu primer día en Tracker</div>'; return; }
   const scores = DATA.map(dayScore);
-  // metrics
   const bestI = scores.reduce((bi,s,i)=>(s??-1)>(scores[bi]??-1)?i:bi, 0);
   const best = DATA[bestI];
   document.getElementById('m-best').textContent = best ? best.d+' · '+dayScore(best)+'%' : '—';
@@ -628,20 +784,16 @@ function renderResumen(){
   const weak = AREAS.filter(a=>{ const s=areaAvg(a.k); return s!=null&&s<70; }).sort((a,b)=>areaAvg(a.k)-areaAvg(b.k));
   const wEl = document.getElementById('m-weak');
   wEl.textContent = weak.length ? weak[0].label.split('&')[0].trim() : '—';
-  wEl.style.color = weak.length ? weak[0].color : '#1a1a1a';
-
-  // bars
+  wEl.style.color = weak.length ? weak[0].color : 'var(--txt)';
   const barsEl = document.getElementById('daily-bars');
   barsEl.innerHTML = scores.map((s,i)=>{
     const h = s==null ? 2 : Math.max(2, Math.round((s/100)*56));
     return `<div class="bar-col">
       <div class="bar-val">${s!=null?s+'%':''}</div>
-      <div class="bar-rect" style="height:${h}px;background:#534AB7;opacity:${s==null?.15:.82}"></div>
+      <div class="bar-rect" style="height:${h}px;background:#7B72E9;opacity:${s==null?.15:.82}"></div>
       <div class="bar-day">${DATA[i].d}</div>
     </div>`;
   }).join('');
-
-  // radar
   renderRadar();
 }
 
@@ -650,41 +802,37 @@ function renderRadar(){
   const cx=120,cy=120,R=82,n=AREAS.length;
   const angle = i=>(i/n)*2*Math.PI-Math.PI/2;
   const pt = (i,f)=>({ x:cx+R*f*Math.cos(angle(i)), y:cy+R*f*Math.sin(angle(i)) });
-
+  const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const gridColor = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.07)';
+  const labelColor = isDark ? '#555555' : '#a0a0a0';
   let html = '';
-  // grid
   [.25,.5,.75,1].forEach(f=>{
     const pts = AREAS.map((_,i)=>{ const p=pt(i,f); return `${p.x.toFixed(1)},${p.y.toFixed(1)}`; }).join(' ');
-    html += `<polygon points="${pts}" fill="none" stroke="rgba(0,0,0,0.07)" stroke-width="0.5"/>`;
+    html += `<polygon points="${pts}" fill="none" stroke="${gridColor}" stroke-width="0.5"/>`;
   });
-  // spokes
-  AREAS.forEach((_,i)=>{ const e=pt(i,1); html+=`<line x1="${cx}" y1="${cy}" x2="${e.x.toFixed(1)}" y2="${e.y.toFixed(1)}" stroke="rgba(0,0,0,0.07)" stroke-width="0.5"/>`; });
-
-  // score polygon
+  AREAS.forEach((_,i)=>{ const e=pt(i,1); html+=`<line x1="${cx}" y1="${cy}" x2="${e.x.toFixed(1)}" y2="${e.y.toFixed(1)}" stroke="${gridColor}" stroke-width="0.5"/>`; });
   const avgs = AREAS.map(a=>areaAvg(a.k));
   const spoly = AREAS.map((a,i)=>{ const f=(avgs[i]??0)/100; const p=pt(i,f); return `${p.x.toFixed(1)},${p.y.toFixed(1)}`; }).join(' ');
-  html += `<polygon points="${spoly}" fill="#534AB7" fill-opacity="0.15" stroke="#534AB7" stroke-width="1.5"/>`;
+  html += `<polygon points="${spoly}" fill="#7B72E9" fill-opacity="0.15" stroke="#7B72E9" stroke-width="1.5"/>`;
   AREAS.forEach((a,i)=>{ const f=(avgs[i]??0)/100; const p2=pt(i,f); html+=`<circle cx="${p2.x.toFixed(1)}" cy="${p2.y.toFixed(1)}" r="3" fill="${a.color}"/>`; });
-
-  // labels
   AREAS.forEach((a,i)=>{
     const lp=pt(i,1.22);
     const name=a.label.split('&')[0].trim();
-    html+=`<text x="${lp.x.toFixed(1)}" y="${lp.y.toFixed(1)}" text-anchor="middle" dominant-baseline="middle" font-size="10" fill="#a0a0a0">${name}</text>`;
+    html+=`<text x="${lp.x.toFixed(1)}" y="${lp.y.toFixed(1)}" text-anchor="middle" dominant-baseline="middle" font-size="10" fill="${labelColor}">${name}</text>`;
   });
-
   svg.innerHTML = html;
 }
 
 function renderAreas(){
   const grid = document.getElementById('areas-grid');
+  if(!DATA.length){ grid.innerHTML='<div style="color:var(--txt3);font-size:12px">Sin datos aún</div>'; return; }
   grid.innerHTML = AREAS.map(a=>{
     const s = areaAvg(a.k);
     const days = DATA.map(r=>areaScore(r,a.k));
     const last=days[days.length-1], prev=days[days.length-2];
     const trend = (last!=null&&prev!=null) ? last-prev : null;
     const trendHtml = trend!=null
-      ? `<div class="area-trend" style="color:${trend>0?'#0F6E56':trend<0?'#993C1D':'#a0a0a0'}">${trend>0?'↑':trend<0?'↓':' '}${Math.abs(trend)}% vs ayer</div>`
+      ? `<div class="area-trend" style="color:${trend>0?'#2DB88F':trend<0?'#E05A32':'var(--txt3)'}">${trend>0?'↑':trend<0?'↓':' '}${Math.abs(trend)}% vs ayer</div>`
       : '';
     return `<div class="area-card">
       <div class="area-top">
@@ -704,7 +852,7 @@ function renderTracker(){
   const container = document.getElementById('tracker-rows');
   container.innerHTML = DATA.map((row,di)=>{
     const s = dayScore(row);
-    const sColor = s!=null ? scoreColor(s) : '#a0a0a0';
+    const sColor = s!=null ? scoreColor(s) : 'var(--txt3)';
     const dots = AREAS.map(a=>{
       const v = areaScore(row,a.k);
       const op = v!=null ? Math.max(.15, v/100) : .1;
@@ -738,18 +886,14 @@ function renderTracker(){
     </div>`;
   }).join('');
 
-  // header toggle
   container.querySelectorAll('.day-header').forEach(h=>{
     h.addEventListener('click',()=>{
       const di = h.dataset.di;
-      const body = document.getElementById('body-'+di);
-      const chev = document.getElementById('chev-'+di);
-      body.classList.toggle('open');
-      chev.classList.toggle('open');
+      document.getElementById('body-'+di).classList.toggle('open');
+      document.getElementById('chev-'+di).classList.toggle('open');
     });
   });
 
-  // vote buttons
   container.querySelectorAll('.vbtn').forEach(btn=>{
     btn.addEventListener('click',e=>{
       e.stopPropagation();
@@ -763,11 +907,12 @@ function renderTracker(){
 
 function renderHeatmap(){
   const inner = document.getElementById('heat-inner');
+  if(!DATA.length){ inner.innerHTML='<div style="color:var(--txt3);font-size:12px">Sin datos aún</div>'; return; }
   const dayLabels = `<div class="heat-days-header">${DATA.map(r=>`<div class="heat-day-label">${r.d}</div>`).join('')}</div>`;
   const rows = AREAS.map(a=>{
     const cells = DATA.map(r=>{
       const s = areaScore(r,a.k);
-      const bg = s==null ? 'rgba(0,0,0,0.06)'
+      const bg = s==null ? 'var(--bg3)'
         : s>=90 ? a.color
         : s>=65 ? hex2alpha(a.color,.75)
         : s>=35 ? hex2alpha(a.color,.4)
@@ -780,7 +925,7 @@ function renderHeatmap(){
     </div>`;
   }).join('');
   const legend = `<div class="heat-legend">
-    ${[['bajo','rgba(83,74,183,.15)'],['medio','rgba(83,74,183,.4)'],['alto','rgba(83,74,183,.75)'],['óptimo','#534AB7']].map(([l,bg])=>`<div class="heat-legend-item"><div class="heat-legend-swatch" style="background:${bg}"></div>${l}</div>`).join('')}
+    ${[['bajo','rgba(123,114,233,.15)'],['medio','rgba(123,114,233,.4)'],['alto','rgba(123,114,233,.75)'],['óptimo','#7B72E9']].map(([l,bg])=>`<div class="heat-legend-item"><div class="heat-legend-swatch" style="background:${bg}"></div>${l}</div>`).join('')}
   </div>`;
   inner.innerHTML = dayLabels + rows + legend;
 }
@@ -821,11 +966,22 @@ document.getElementById('btn-add-day').addEventListener('click',()=>{
 
 document.getElementById('new-day-name').addEventListener('input',e=>{ newEntry.d = e.target.value; });
 
-document.getElementById('btn-save-new').addEventListener('click',()=>{
+document.getElementById('btn-save-new').addEventListener('click', async ()=>{
   if(!newEntry.d) return;
-  DATA.push({...newEntry});
+  const entry = {...newEntry};
+
+  // Guardar en Sheet
+  const saveBtn = document.getElementById('btn-save-new');
+  saveBtn.textContent = 'Guardando…';
+  saveBtn.disabled = true;
+  await saveToSheet(entry);
+
+  // Actualizar DATA local
+  DATA.push(entry);
   newEntry = { d:'' };
   newForm.classList.remove('open');
+  saveBtn.textContent = 'Guardar';
+  saveBtn.disabled = false;
   render();
 });
 
@@ -833,8 +989,9 @@ document.getElementById('btn-cancel-new').addEventListener('click',()=>{
   newForm.classList.remove('open');
 });
 
-// ── Init ──
-render();
+// ── Init — carga desde Sheet ──
+render(); // muestra "Cargando…"
+loadFromSheet();
 </script>
 </body>
 </html>
