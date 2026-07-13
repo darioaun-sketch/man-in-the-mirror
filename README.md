@@ -70,7 +70,7 @@
   .day-header:hover { background: var(--bg2); }
   .day-body { display: none; padding: 0 16px 14px; border-top: 0.5px solid var(--border); }
   .day-body.open { display: block; }
-  .section-title { font-size: 10px; color: var(--txt3); text-transform: uppercase; letter-spacing: 0.08em; margin: 16px 0 10px; font-weight: 500; }
+  .section-title { font-size: 10px; color: var(--txt3); text-transform: uppercase; letter-spacing: 0.08em; margin: 16px 0 10px; font-weight: 600; }
 
   .habit-row-wrap { margin-bottom: 8px; border-bottom: 0.5px solid var(--border); padding-bottom: 8px; }
   .habit-top { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
@@ -81,13 +81,14 @@
   
   .text-input { width: 100%; border: 0.5px solid var(--border2); border-radius: var(--radius-sm); padding: 8px 10px; font-size: 11px; font-family: inherit; background: var(--bg); color: var(--txt); outline: none; margin-bottom: 4px; }
   .text-input:focus { border-color: var(--fe); }
+  .journal-input { min-height: 90px; resize: vertical; line-height: 1.6; }
 
   .photo-upload { font-size: 11px; margin-bottom: 10px; }
   .photo-preview { max-width: 100%; border-radius: 8px; margin-top: 8px; border: 0.5px solid var(--border); display: none; }
   .btn-add { font-size: 11px; padding: 5px 14px; border-radius: 7px; border: none; background: var(--txt); color: var(--bg); cursor: pointer; font-weight: 500; }
 
   /* ── SOS Button ── */
-  .sos-btn { position: fixed; bottom: 20px; right: 20px; width: 50px; height: 50px; border-radius: 25px; background: var(--sos); color: white; font-weight: 600; border: none; box-shadow: 0 4px 12px rgba(211,47,47,0.4); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; z-index: 100; transition: transform 0.2s; }
+  .sos-btn { position: fixed; bottom: 20px; right: 20px; width: 50px; height: 50px; border-radius: 25px; background: var(--sos); color: white; font-weight: 600; border: none; box-shadow: 0 4px 12px rgba(211,47,47,0.4); cursor: pointer; display: none; align-items: center; justify-content: center; font-size: 14px; z-index: 100; transition: transform 0.2s; }
   .sos-btn:active { transform: scale(0.9); }
 
   /* ── Modals ── */
@@ -128,7 +129,6 @@
   <button class="tab" data-tab="boveda">Bóveda del Chef</button>
 </div>
 
-<!-- RESUMEN -->
 <div class="panel visible" id="panel-resumen">
   <div class="metrics">
     <div class="metric"><div class="metric-label">mejor día</div><div class="metric-val" id="m-best">—</div></div>
@@ -157,15 +157,12 @@
   </div>
 </div>
 
-<!-- ÁREAS -->
 <div class="panel" id="panel-areas"><div id="areas-grid" style="display:grid; gap:8px;"></div></div>
 
-<!-- HÁBITOS (HOY) -->
 <div class="panel" id="panel-habitos">
   <div id="habitos-grid"></div>
 </div>
 
-<!-- TRACKER REFLEXIÓN -->
 <div class="panel" id="panel-tracker">
   <div style="display:flex;justify-content:space-between;margin-bottom:12px;">
     <div class="header-title" style="font-size:24px;">Historial</div>
@@ -174,7 +171,6 @@
   <div id="tracker-rows"></div>
 </div>
 
-<!-- HEATMAP -->
 <div class="panel" id="panel-heatmap">
   <div class="card">
     <div class="card-label">Mapa de calor · cada celda es un día</div>
@@ -182,7 +178,6 @@
   </div>
 </div>
 
-<!-- BÓVEDA DEL CHEF -->
 <div class="panel" id="panel-boveda">
   <div class="card">
     <div class="card-label">Bóveda de Conocimiento</div>
@@ -193,7 +188,6 @@
 
 <button class="sos-btn" id="btn-sos">SOS</button>
 
-<!-- MODALS -->
 <div class="modal-overlay" id="modal-timer">
   <div class="modal-box">
     <div class="card-label" id="timer-title">Modo Enfoque</div>
@@ -329,6 +323,8 @@ function render() {
   const g = DATA.map(dayScore).filter(v=>v!=null);
   document.getElementById('global-score').textContent = g.length ? Math.round(g.reduce((a,b)=>a+b,0)/g.length)+'%' : '—';
   
+  checkSOS(); // Verifica si se debe mostrar el botón SOS rojo
+  
   if(document.getElementById('panel-resumen').classList.contains('visible')) {
     const scores = DATA.map(dayScore);
     document.getElementById('m-best').textContent = DATA.length ? Math.max(...scores.filter(v=>v!=null))+'%' : '—';
@@ -371,14 +367,29 @@ function render() {
           <div style="font-weight:500;">${dayScore(r)!=null?dayScore(r)+'%':'—'}</div>
         </div>
         <div class="day-body" id="body-${di}">
-          <input type="text" class="text-input note-main" data-di="${di}" placeholder="Mentalidad / Objetivo del día..." value="${r.note||''}">
           
-          <div class="section-title">Foto del Día (Opcional)</div>
+          <div class="section-title">Diario de Vida</div>
+          <textarea class="text-input journal-input" data-di="${di}" placeholder="Escribe aquí tus pensamientos, cómo te sentiste, lecciones del día...">${r.note||''}</textarea>
+
+          <div class="section-title">Reflexión Nocturna</div>
+          ${QS.map((q, qi) => `
+            <div style="margin-bottom:8px;">
+              <div style="font-size:11px; margin-bottom:4px; color:var(--txt2);">${q.q}</div>
+              <div style="display:flex; gap:4px;">
+                ${['Sí', 'Parcial', 'No'].map(opt => {
+                  let sel = r.qs && r.qs[q.q] === opt;
+                  let bg = sel ? 'var(--txt)' : 'var(--bg2)';
+                  let col = sel ? 'var(--bg)' : 'var(--txt2)';
+                  return `<button style="flex:1; padding:6px; font-size:11px; border:0.5px solid var(--border); border-radius:4px; background:${bg}; color:${col}; cursor:pointer; font-weight:500;" onclick="setReflexion(${di}, '${q.q.replace(/'/g, "&apos;")}', '${opt}')">${opt}</button>`;
+                }).join('')}
+              </div>
+            </div>
+          `).join('')}
+          
+          <div class="section-title" style="margin-top:16px;">Foto del Día (Opcional)</div>
           <input type="file" class="photo-upload" accept="image/*" onchange="handleImage(this, ${di})">
           <img class="photo-preview" id="img-${di}" src="${r.img||''}" style="display:${r.img?'block':'none'}">
 
-          <div class="section-title">Hábitos</div>
-          ${renderHabitList(di, true)}
         </div>
       </div>
     `).reverse().join('');
@@ -391,6 +402,35 @@ function render() {
   if(document.getElementById('panel-boveda').classList.contains('visible')) {
     renderVault();
   }
+}
+
+// BOTÓN SOS LOGIC (Mostrar solo si promedio últimos 3 días < 40%)
+function checkSOS() {
+  const btnSOS = document.getElementById('btn-sos');
+  if (DATA.length < 3) {
+    btnSOS.style.display = 'none';
+    return;
+  }
+  const last3 = DATA.slice(-3);
+  let validDays = last3.filter(r => dayScore(r) != null);
+  if (validDays.length < 3) {
+    btnSOS.style.display = 'none';
+    return;
+  }
+  let avg = Math.round(validDays.reduce((a,b)=>a+dayScore(b),0)/validDays.length);
+  
+  if (avg < 40) {
+    btnSOS.style.display = 'flex'; // Emergencia. Mostrar.
+  } else {
+    btnSOS.style.display = 'none'; // Todo bien. Ocultar.
+  }
+}
+
+// RESPUESTAS DE REFLEXIÓN (Sí, Parcial, No)
+function setReflexion(di, q, val) {
+  if(!DATA[di].qs) DATA[di].qs = {};
+  DATA[di].qs[q] = val;
+  saveData(); render();
 }
 
 // RADAR CHART
@@ -422,8 +462,8 @@ function renderHeatmap() {
     `<div class="heat-legend">${[['bajo','rgba(123,114,233,.15)'],['medio','rgba(123,114,233,.4)'],['alto','rgba(123,114,233,.75)'],['óptimo','#7B72E9']].map(([l,c])=>`<div><div class="heat-legend-swatch" style="background:${c}"></div>${l}</div>`).join('')}</div>`;
 }
 
-// HABITS RENDERER
-function renderHabitList(di, isTracker = false) {
+// HABITS RENDERER (Solo muestra la lista)
+function renderHabitList(di) {
   const row = DATA[di];
   if(!row.habits) row.habits = defaultHabits();
   return AREAS.map(a => {
@@ -432,18 +472,19 @@ function renderHabitList(di, isTracker = false) {
       let hd = row.habits[h] || {done:false, note:''};
       let streak = getStreak(h);
       let fire = streak > 2 ? `<span class="habit-streak">🔥${streak}</span>` : '';
-      let timerBtn = TIMERS[h] && !hd.done ? `<button class="btn-timer" onclick="openTimer('${h}', ${di}, ${TIMERS[h]})">⏱️</button>` : '';
+      let timerBtn = TIMERS[h] && !hd.done ? `<button class="btn-timer" onclick="openTimer('${h.replace(/'/g, "&apos;")}', ${di}, ${TIMERS[h]})">⏱️</button>` : '';
       let bg = hd.done ? a.color : 'transparent';
       let chk = hd.done ? `<svg width="10" height="10"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.5" fill="none"/></svg>` : '';
       
+      // Fix del apóstrofe al inyectar HTML: h.replace(/'/g, "&apos;")
       html += `
       <div class="habit-row-wrap">
         <div class="habit-top">
-          <div class="habit-chk" style="background:${bg}; border-color:${hd.done?a.color:'var(--border2)'}" onclick="toggleHabit(${di}, '${h}')">${chk}</div>
-          <div class="habit-name" style="text-decoration:${hd.done?'line-through':'none'}; color:${hd.done?'var(--txt3)':'var(--txt)'}" onclick="toggleHabit(${di}, '${h}')">${h} ${fire}</div>
+          <div class="habit-chk" style="background:${bg}; border-color:${hd.done?a.color:'var(--border2)'}" onclick="toggleHabit(${di}, '${h.replace(/'/g, "&apos;")}')">${chk}</div>
+          <div class="habit-name" style="text-decoration:${hd.done?'line-through':'none'}; color:${hd.done?'var(--txt3)':'var(--txt)'}" onclick="toggleHabit(${di}, '${h.replace(/'/g, "&apos;")}')">${h} ${fire}</div>
           ${timerBtn}
         </div>
-        <input type="text" class="text-input habit-note" data-di="${di}" data-h="${h}" value="${hd.note||''}" placeholder="Notas / Detalles...">
+        <input type="text" class="text-input habit-note" data-di="${di}" data-h="${h.replace(/'/g, "&apos;")}" value="${hd.note||''}" placeholder="Notas / Detalles...">
       </div>`;
     });
     return html;
@@ -460,7 +501,7 @@ document.getElementById('btn-add-day').addEventListener('click', () => {
 });
 
 document.addEventListener('input', e => {
-  if(e.target.classList.contains('note-main')) { DATA[e.target.dataset.di].note = e.target.value; saveData(); }
+  if(e.target.classList.contains('journal-input')) { DATA[e.target.dataset.di].note = e.target.value; saveData(); }
   if(e.target.classList.contains('habit-note')) { DATA[e.target.dataset.di].habits[e.target.dataset.h].note = e.target.value; saveData(); renderVault(); }
   if(e.target.id === 'vault-search') renderVault(e.target.value);
 });
@@ -496,7 +537,7 @@ function generateInsights() {
   let noSleepDays = DATA.filter(r => !r.habits?.['Dormir 8–9 horas']?.done);
   let noSleepScoreAvg = noSleepDays.length ? Math.round(noSleepDays.reduce((a,b)=>a+dayScore(b),0)/noSleepDays.length) : 0;
   
-  let txt = `Cuando duermes 8 horas, tu puntuación promedio es <b>${sleepScoreAvg}%</b>. `;
+  let txt = `Cuando duermes 8–9 horas, tu puntuación promedio es <b>${sleepScoreAvg}%</b>. `;
   if(noSleepDays.length) txt += `Cuando no lo haces, cae a <b>${noSleepScoreAvg}%</b>. `;
   
   el.innerHTML = txt;
@@ -530,7 +571,7 @@ function renderVault(filter = "") {
   el.innerHTML = html || "<div style='color:var(--txt3); font-size:12px;'>No hay notas que coincidan.</div>";
 }
 
-// SOS & TIMERS & MODALS
+// MODALS / THEMES / TIMERS
 document.getElementById('btn-theme').addEventListener('click', () => {
   document.body.classList.toggle('dark-mode');
   localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
