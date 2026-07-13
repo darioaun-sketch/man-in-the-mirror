@@ -462,7 +462,7 @@
   <div>
     <div class="header-label">man in the mirror</div>
     <div class="header-title">Estadísticas de vida</div>
-    <div class="header-sub" id="sub-label">7 días registrados esta semana</div>
+    <div class="header-sub" id="sub-label">0 días registrados esta semana</div>
   </div>
   <div class="header-score">
     <div class="header-score-num" id="global-score">—</div>
@@ -478,7 +478,6 @@
   <button class="tab" data-tab="heatmap">Heatmap</button>
 </div>
 
-<!-- RESUMEN -->
 <div class="panel visible" id="panel-resumen">
   <div class="metrics">
     <div class="metric">
@@ -499,17 +498,15 @@
     <div class="bars" id="daily-bars"></div>
   </div>
   <div class="card">
-    <div class="card-label">Radar de áreas · promedio semanal</div>
+    <div class="card-label">Radar de áreas · promedio general</div>
     <svg id="radar-svg" viewBox="0 0 240 240" width="100%"></svg>
   </div>
 </div>
 
-<!-- ÁREAS -->
 <div class="panel" id="panel-areas">
   <div class="areas-grid" id="areas-grid"></div>
 </div>
 
-<!-- HÁBITOS -->
 <div class="panel" id="panel-habitos">
   <div class="tracker-header">
     <div class="tracker-title">Hábitos del día</div>
@@ -518,7 +515,6 @@
   <div id="habitos-grid"></div>
 </div>
 
-<!-- TRACKER REFLEXIÓN -->
 <div class="panel" id="panel-tracker">
   <div class="tracker-header">
     <div class="tracker-title">Reflexión nocturna</div>
@@ -536,7 +532,6 @@
   <div id="tracker-rows"></div>
 </div>
 
-<!-- HEATMAP -->
 <div class="panel" id="panel-heatmap">
   <div class="card">
     <div class="card-label">Mapa de calor · cada celda es un día, más oscuro es mejor</div>
@@ -547,7 +542,8 @@
 </div>
 
 <script>
-const SHEET_URL = 'https://script.google.com/macros/s/AKfycbw1mzp5cYddTLKVyS04LUqSOOHOkxcjhznLNBblBly6U94FTRFBtYeg6BiqJOR2RMUbow/exec';
+// La URL original de Sheets ya no se usa, guardamos la data internamente
+const STORAGE_KEY = 'man_in_the_mirror_v1';
 
 const AREAS = [
   { k:"fe",     label:"Fe & espíritu",         color:"#7B72E9" },
@@ -627,37 +623,33 @@ const QS_AREA = {
 const VAL = { "Sí":2, "Parcial":1, "No":0 };
 let DATA = [];
 let LOADING = true;
+let HABITOS_CHECK = {};
 
-// ── Google Sheets ──
-async function loadFromSheet() {
+// ── LÓGICA DE ALMACENAMIENTO LOCAL (Reemplaza Google Sheets) ──
+function loadData() {
   try {
-    const res = await fetch(SHEET_URL);
-    const rows = await res.json();
-    DATA = rows.map(r => {
-      const obj = { d: r['Día'] || r['Dia'] || '' };
-      QS.forEach(({q}) => { obj[q] = r[q] || null; });
-      return obj;
-    }).filter(r => r.d);
-    LOADING = false;
-    render();
-  } catch(e) {
-    LOADING = false;
-    document.getElementById('sub-label').textContent = 'Error cargando datos — revisa la conexión';
-    render();
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      DATA = parsed.data || [];
+      HABITOS_CHECK = parsed.habits || {};
+    }
+  } catch (e) {
+    console.error("Error leyendo localStorage", e);
   }
+  LOADING = false;
+  render();
 }
 
-async function saveToSheet(entry) {
-  const body = { dia: entry.d, fecha: new Date().toISOString().split('T')[0] };
-  QS.forEach(({q}) => { body[q] = entry[q] || ''; });
+function saveData() {
   try {
-    await fetch(SHEET_URL, {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
-    });
-  } catch(e) { console.error('Error guardando:', e); }
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      data: DATA,
+      habits: HABITOS_CHECK
+    }));
+  } catch (e) {
+    console.error("Error guardando en localStorage", e);
+  }
 }
 
 // ── Calculations ──
@@ -714,11 +706,11 @@ document.querySelectorAll('.tab').forEach(btn=>{
 
 function activeTab(){ return document.querySelector('.tab.active').dataset.tab; }
 
-// ── Hábitos locales (solo sesión, no se guardan en Sheet) ──
-let HABITOS_CHECK = {};
+// ── Hábitos con guardado ──
 function toggleHabito(area, idx){
   const key = area+'_'+idx;
   HABITOS_CHECK[key] = !HABITOS_CHECK[key];
+  saveData(); // <--- INYECTADO
   renderHabitos();
 }
 
@@ -884,7 +876,7 @@ function renderTracker(){
       </div>
       <div class="day-body" id="body-${di}">${qRows}</div>
     </div>`;
-  }).join('');
+  }).reverse().join(''); // Invertimos para que el día más nuevo salga arriba
 
   container.querySelectorAll('.day-header').forEach(h=>{
     h.addEventListener('click',()=>{
@@ -899,6 +891,7 @@ function renderTracker(){
       e.stopPropagation();
       const {di,q,v} = btn.dataset;
       DATA[+di][q] = v;
+      saveData(); // <--- INYECTADO
       renderTracker();
       renderHeader();
     });
@@ -949,6 +942,7 @@ function renderNewForm(){
       </div>
     </div>`;
   }).join('');
+  
   newQRows.querySelectorAll('.vbtn').forEach(btn=>{
     btn.addEventListener('click',()=>{
       newEntry[btn.dataset.q] = btn.dataset.v;
@@ -957,41 +951,36 @@ function renderNewForm(){
   });
 }
 
-document.getElementById('btn-add-day').addEventListener('click',()=>{
-  newEntry = { d:'' };
+// ── Eventos para crear un nuevo día ──
+document.getElementById('btn-add-day').addEventListener('click', () => {
+  newEntry = { d: '' };
+  document.getElementById('new-day-name').value = '';
   newForm.classList.add('open');
   renderNewForm();
-  document.getElementById('new-day-name').focus();
 });
 
-document.getElementById('new-day-name').addEventListener('input',e=>{ newEntry.d = e.target.value; });
-
-document.getElementById('btn-save-new').addEventListener('click', async ()=>{
-  if(!newEntry.d) return;
-  const entry = {...newEntry};
-
-  // Guardar en Sheet
-  const saveBtn = document.getElementById('btn-save-new');
-  saveBtn.textContent = 'Guardando…';
-  saveBtn.disabled = true;
-  await saveToSheet(entry);
-
-  // Actualizar DATA local
-  DATA.push(entry);
-  newEntry = { d:'' };
+document.getElementById('btn-cancel-new').addEventListener('click', () => {
   newForm.classList.remove('open');
-  saveBtn.textContent = 'Guardar';
-  saveBtn.disabled = false;
+});
+
+document.getElementById('btn-save-new').addEventListener('click', () => {
+  const dayName = document.getElementById('new-day-name').value.trim();
+  if (!dayName) {
+    alert("Por favor, ingresa un nombre para el día (ej: Lun 16).");
+    return;
+  }
+  newEntry.d = dayName;
+  DATA.push({...newEntry});
+  saveData(); // <--- INYECTADO
+  newForm.classList.remove('open');
   render();
 });
 
-document.getElementById('btn-cancel-new').addEventListener('click',()=>{
-  newForm.classList.remove('open');
+// Inicializamos el sistema cargando los datos locales
+document.addEventListener('DOMContentLoaded', () => {
+  loadData();
 });
 
-// ── Init — carga desde Sheet ──
-render(); // muestra "Cargando…"
-loadFromSheet();
 </script>
 </body>
 </html>
