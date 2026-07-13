@@ -224,7 +224,7 @@
 </div>
 
 <script>
-const STORAGE_KEY = 'man_in_the_mirror_v2'; // Clave nueva para estructura limpia
+const STORAGE_KEY = 'man_in_the_mirror_v2'; // Clave para estructura limpia
 
 const AREAS = [
   { k:"fe",     label:"Fe & espíritu",         color:"#7B72E9" },
@@ -268,22 +268,23 @@ const HABITOS = {
   ]
 };
 
+// Preguntas corregidas sin Hopecast y enfocadas en la misión actual
 const QS = [
-  { q:"¿Conecté con Dios hoy?",              area:"fe" },
-  { q:"¿Fui agradecido durante el día?",     area:"fe" },
-  { q:"¿Viví con propósito y paz interior?", area:"fe" },
-  { q:"¿Aprendí algo nuevo hoy?",            area:"mente" },
-  { q:"¿Sostuve mi cortisol bajo?",          area:"mente" },
-  { q:"¿Mi mente estuvo enfocada y clara?",  area:"mente" },
-  { q:"¿Completé mis 5 horas de trabajo?",   area:"mision" },
-  { q:"¿Avancé en Hopecast hoy?",            area:"mision" },
-  { q:"¿Aportó valor mi trabajo de hoy?",    area:"mision" },
-  { q:"¿Entrené con intensidad?",            area:"cuerpo" },
-  { q:"¿Cumplí mi nutrición del día?",       area:"cuerpo" },
-  { q:"¿Mi energía fue alta hoy (7+/10)?",   area:"cuerpo" },
-  { q:"¿Cumplí mis horarios?",               area:"car" },
-  { q:"¿Fui íntegro cuando nadie miraba?",   area:"car" },
-  { q:"¿Cumplí todo lo que prometí?",        area:"car" }
+  { q:"¿Conecté con Dios hoy?",                  area:"fe" },
+  { q:"¿Fui agradecido durante el día?",         area:"fe" },
+  { q:"¿Viví con propósito y paz interior?",     area:"fe" },
+  { q:"¿Aprendí algo nuevo hoy?",                area:"mente" },
+  { q:"¿Sostuve mi cortisol bajo?",              area:"mente" },
+  { q:"¿Mi mente estuvo enfocada y clara?",      area:"mente" },
+  { q:"¿Fui constante en mi camino como chef?",  area:"mision" },
+  { q:"¿Avancé en mi diario y aprendizajes?",    area:"mision" },
+  { q:"¿Aportó valor mi trabajo de hoy?",        area:"mision" },
+  { q:"¿Entrené con intensidad?",                area:"cuerpo" },
+  { q:"¿Cumplí mi nutrición del día?",           area:"cuerpo" },
+  { q:"¿Mi energía fue alta hoy (7+/10)?",       area:"cuerpo" },
+  { q:"¿Cumplí mis horarios?",                   area:"car" },
+  { q:"¿Fui íntegro cuando nadie miraba?",       area:"car" },
+  { q:"¿Cumplí todo lo que prometí?",            area:"car" }
 ];
 
 const QS_AREA = {
@@ -302,7 +303,7 @@ function loadData() {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
       DATA = JSON.parse(saved);
-      // Migración si vienen del formato viejo v1 (sin habits/qs encapsulados)
+      // Migración si vienen del formato viejo
       if(DATA.data) {
          DATA = DATA.data.map(r => {
              let nr = { d: r.d, note: '', qs: {}, habits: defaultHabits() };
@@ -323,7 +324,7 @@ function defaultHabits() {
   return h;
 }
 
-// ── Calculadoras de 75% / 25% ──
+// ── Calculadoras de 75% Hábitos / 25% Reflexión ──
 function mean(arr){ return arr.length ? arr.reduce((a,b)=>a+b,0)/arr.length : 0; }
 
 function getHabScore(row, ak) {
