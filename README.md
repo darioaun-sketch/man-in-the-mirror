@@ -76,8 +76,8 @@
   .habit-top { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
   .habit-chk { width: 16px; height: 16px; border-radius: 4px; border: 1.5px solid var(--border2); cursor: pointer; display: flex; align-items: center; justify-content: center; }
   .habit-name { font-size: 12px; flex: 1; cursor: pointer; user-select: none; }
-  .habit-streak { font-size: 10px; color: #E8931A; font-weight: 600; display: flex; align-items: center; gap: 2px; }
-  .btn-timer { background: var(--bg2); border: 0.5px solid var(--border); border-radius: 4px; padding: 2px 6px; font-size: 10px; cursor: pointer; color: var(--txt); }
+  .habit-streak { font-size: 10px; font-weight: 600; display: flex; align-items: center; gap: 2px; }
+  .btn-timer { background: var(--bg2); border: 0.5px solid var(--border); border-radius: 4px; padding: 2px 6px; font-size: 12px; cursor: pointer; color: var(--txt); }
   
   .text-input { width: 100%; border: 0.5px solid var(--border2); border-radius: var(--radius-sm); padding: 8px 10px; font-size: 11px; font-family: inherit; background: var(--bg); color: var(--txt); outline: none; margin-bottom: 4px; }
   .text-input:focus { border-color: var(--fe); }
@@ -110,7 +110,7 @@
     <div class="header-label">man in the mirror</div>
     <div class="header-title">Estadísticas de Vida</div>
     <div class="top-btns">
-      <button class="icon-btn" id="btn-theme" title="Modo Oscuro">🌙</button>
+      <button class="icon-btn" id="btn-theme" title="Modo Oscuro">⚫</button>
       <button class="icon-btn" id="btn-future" title="Tú del Futuro">👁️</button>
     </div>
   </div>
@@ -137,12 +137,12 @@
   </div>
   
   <div class="card" id="insights-card">
-    <div class="card-label">🧠 Inteligencia & Correlaciones</div>
+    <div class="card-label">🗒️ Inteligencia & Correlaciones</div>
     <div id="insights-content" style="font-size:12px; color:var(--txt2);">Analizando datos...</div>
   </div>
 
   <div class="card" id="weekly-card">
-    <div class="card-label">📅 Resumen Últimos 7 Días</div>
+    <div class="card-label">🗓️ Resumen Últimos 7 Días</div>
     <div id="weekly-content" style="font-size:12px;"></div>
   </div>
 
@@ -186,7 +186,7 @@
   </div>
 </div>
 
-<button class="sos-btn" id="btn-sos">SOS</button>
+<button class="sos-btn" id="btn-sos">🚨</button>
 
 <div class="modal-overlay" id="modal-timer">
   <div class="modal-box">
@@ -230,6 +230,9 @@
 
 <script>
 const STORAGE_KEY = 'man_in_the_mirror_ultimate';
+
+let openDays = new Set();
+
 const AREAS = [
   { k:"fe",     label:"Fe & espíritu",         color:"#7B72E9" },
   { k:"mente",  label:"Mente & aprendizaje",   color:"#3A8FE8" },
@@ -237,34 +240,60 @@ const AREAS = [
   { k:"cuerpo", label:"Cuerpo & salud",        color:"#2DB88F" },
   { k:"car",    label:"Carácter & disciplina", color:"#888884" },
 ];
+
 const HABITOS = {
   fe: ["Leer la Biblia 30 min", "Reflexión nocturna", "Ver Smallville"],
-  mente: ["Leer You Can't Hurt Me 30 min", "Estudiar Heroes Academia 1 hora", "Medir cortisol (1–10)"],
+  mente: ["Leer You Cant Hurt Me 30 min", "Estudiar Heroes Academia 1 hora", "Medir cortisol (1–10)"],
   mision: ["aplicación chef", "aprendizaje chef", "el diario del chef", "Ayudar en casa (cocinar o arreglar)"],
   cuerpo: ["Entrenar", "3 litros de agua", "140g proteína", "240g carbohidratos", "70g grasas", "Ducha fría", "Dormir 8–9 horas", "Medir energía (1–10)"],
   car: ["Cumplir horario del día", "Mantener espacio limpio", "Evitar distracciones innecesarias"]
 };
+
 const QS = [
-  { q:"¿Conecté con Dios hoy?", area:"fe" }, { q:"¿Aprendí algo nuevo hoy?", area:"mente" },
-  { q:"¿Fui constante como chef?", area:"mision" }, { q:"¿Entrené con intensidad?", area:"cuerpo" },
-  { q:"¿Cumplí mis horarios?", area:"car" }
+  { q:"¿Oré/medité profundamente hoy?", area:"fe" },
+  { q:"¿Leí o estudié contenido espiritual?", area:"fe" },
+  { q:"¿Actué con gratitud en lugar de queja?", area:"fe" },
+  { q:"¿Fui paciente y compasivo con otros?", area:"fe" },
+  { q:"¿Mantuve mi propósito por encima de mi ego?", area:"fe" },
+  { q:"¿Aprendí algo nuevo y aplicable hoy?", area:"mente" },
+  { q:"¿Evité el consumo de contenido basura?", area:"mente" },
+  { q:"¿Mantuve concentración profunda (Deep Work)?", area:"mente" },
+  { q:"¿Leí sin interrupciones el tiempo estipulado?", area:"mente" },
+  { q:"¿Cuestioné mis propias excusas hoy?", area:"mente" },
+  { q:"¿Avancé en mi aprendizaje como chef?", area:"mision" },
+  { q:"¿Trabajé proactivamente en la aplicación?", area:"mision" },
+  { q:"¿Mantuve ordenado mi diario y recetas?", area:"mision" },
+  { q:"¿Ayudé en casa (cocinar o arreglar)?", area:"mision" },
+  { q:"¿Tomé decisiones pensando a largo plazo?", area:"mision" },
+  { q:"¿Entrené con la intensidad necesaria?", area:"cuerpo" },
+  { q:"¿Cumplí mis macros (proteínas/carbos/grasas)?", area:"cuerpo" },
+  { q:"¿Bebí mi meta de agua?", area:"cuerpo" },
+  { q:"¿Tomé mi ducha fría hoy?", area:"cuerpo" },
+  { q:"¿Evité la comida chatarra/azúcares?", area:"cuerpo" },
+  { q:"¿Cumplí mi horario sin posponer?", area:"car" },
+  { q:"¿Hice lo difícil aunque no quería hacerlo?", area:"car" },
+  { q:"¿Mantuve mi entorno de trabajo limpio?", area:"car" },
+  { q:"¿Mantuve las distracciones al margen?", area:"car" },
+  { q:"¿Me levanté sin dudar con la alarma?", area:"car" }
 ];
+
 const VAL = { "Sí":2, "Parcial":1, "No":0 };
 let DATA = [];
 
-// TIMERS PREDEFINIDOS (minutos)
 const TIMERS = {
   "Leer la Biblia 30 min": 30,
-  "Leer You Can't Hurt Me 30 min": 30,
+  "Leer You Cant Hurt Me 30 min": 30,
   "Estudiar Heroes Academia 1 hora": 60,
   "Entrenar": 45
 };
 
-// INITIALIZATION
 function init() {
   const saved = localStorage.getItem(STORAGE_KEY);
   if (saved) DATA = JSON.parse(saved);
-  if(localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-mode');
+  if(localStorage.getItem('theme') === 'dark') {
+    document.body.classList.add('dark-mode');
+    document.getElementById('btn-theme').textContent = '⚪';
+  }
   checkMirror();
   render();
 }
@@ -276,7 +305,6 @@ function defaultHabits() {
   return h;
 }
 
-// SCORING
 function getHabScore(r, ak) {
   let habs = ak ? HABITOS[ak] : Object.values(HABITOS).flat();
   let done = habs.filter(h => r.habits && r.habits[h]?.done).length;
@@ -307,7 +335,6 @@ function getStreak(habit) {
   return s;
 }
 
-// TABS
 document.querySelectorAll('.tab').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
@@ -318,12 +345,11 @@ document.querySelectorAll('.tab').forEach(btn => {
   });
 });
 
-// RENDERING
 function render() {
   const g = DATA.map(dayScore).filter(v=>v!=null);
   document.getElementById('global-score').textContent = g.length ? Math.round(g.reduce((a,b)=>a+b,0)/g.length)+'%' : '—';
   
-  checkSOS(); // Verifica si se debe mostrar el botón SOS rojo
+  checkSOS();
   
   if(document.getElementById('panel-resumen').classList.contains('visible')) {
     const scores = DATA.map(dayScore);
@@ -346,7 +372,7 @@ function render() {
   if(document.getElementById('panel-areas').classList.contains('visible')) {
     document.getElementById('areas-grid').innerHTML = AREAS.map(a => {
       let avg = areaAvg(a.k) || 0;
-      let trophy = (a.k==='mision' && avg>=80) ? '🏆' : '';
+      let trophy = (a.k==='mision' && avg>=80) ? '⬛' : '';
       return `<div class="card" style="display:flex; justify-content:space-between; align-items:center;">
         <div><div style="font-weight:600; color:${a.color}">${a.label} ${trophy}</div><div style="font-size:11px; color:var(--txt3)">Promedio histórico</div></div>
         <div style="font-size:24px; font-family:'Cormorant Garamond', serif;">${avg}%</div>
@@ -369,22 +395,30 @@ function render() {
         <div class="day-body" id="body-${di}">
           
           <div class="section-title">Diario de Vida</div>
-          <textarea class="text-input journal-input" data-di="${di}" placeholder="Escribe aquí tus pensamientos, cómo te sentiste, lecciones del día...">${r.note||''}</textarea>
+          <textarea class="text-input journal-input" data-di="${di}" placeholder="Escribe aquí tus pensamientos...">${r.note||''}</textarea>
 
-          <div class="section-title">Reflexión Nocturna</div>
-          ${QS.map((q, qi) => `
-            <div style="margin-bottom:8px;">
-              <div style="font-size:11px; margin-bottom:4px; color:var(--txt2);">${q.q}</div>
-              <div style="display:flex; gap:4px;">
-                ${['Sí', 'Parcial', 'No'].map(opt => {
-                  let sel = r.qs && r.qs[q.q] === opt;
-                  let bg = sel ? 'var(--txt)' : 'var(--bg2)';
-                  let col = sel ? 'var(--bg)' : 'var(--txt2)';
-                  return `<button style="flex:1; padding:6px; font-size:11px; border:0.5px solid var(--border); border-radius:4px; background:${bg}; color:${col}; cursor:pointer; font-weight:500;" onclick="setReflexion(${di}, '${q.q.replace(/'/g, "&apos;")}', '${opt}')">${opt}</button>`;
-                }).join('')}
+          <div class="section-title">Reflexión Nocturna (25 Preguntas)</div>
+          ${AREAS.map(a => {
+            let areaQs = QS.filter(q => q.area === a.k);
+            return `
+              <div style="margin-bottom: 12px; padding-left: 6px; border-left: 3px solid ${a.color};">
+                <div style="font-weight:600; font-size:11px; color:${a.color}; margin-bottom:6px;">${a.label.toUpperCase()}</div>
+                ${areaQs.map(q => `
+                  <div style="margin-bottom:8px;">
+                    <div style="font-size:11px; margin-bottom:4px; color:var(--txt2);">${q.q}</div>
+                    <div style="display:flex; gap:4px;">
+                      ${['Sí', 'Parcial', 'No'].map(opt => {
+                        let sel = r.qs && r.qs[q.q] === opt;
+                        let bg = sel ? 'var(--txt)' : 'var(--bg2)';
+                        let col = sel ? 'var(--bg)' : 'var(--txt2)';
+                        return `<button style="flex:1; padding:6px; font-size:11px; border:0.5px solid var(--border); border-radius:4px; background:${bg}; color:${col}; cursor:pointer; font-weight:500;" onclick="setReflexion(${di}, '${q.q}', '${opt}')">${opt}</button>`;
+                      }).join('')}
+                    </div>
+                  </div>
+                `).join('')}
               </div>
-            </div>
-          `).join('')}
+            `;
+          }).join('')}
           
           <div class="section-title" style="margin-top:16px;">Foto del Día (Opcional)</div>
           <input type="file" class="photo-upload" accept="image/*" onchange="handleImage(this, ${di})">
@@ -402,9 +436,13 @@ function render() {
   if(document.getElementById('panel-boveda').classList.contains('visible')) {
     renderVault();
   }
+
+  openDays.forEach(di => {
+    const el = document.getElementById('body-'+di);
+    if(el) el.classList.add('open');
+  });
 }
 
-// BOTÓN SOS LOGIC (Mostrar solo si promedio últimos 3 días < 40%)
 function checkSOS() {
   const btnSOS = document.getElementById('btn-sos');
   if (DATA.length < 3) {
@@ -420,20 +458,19 @@ function checkSOS() {
   let avg = Math.round(validDays.reduce((a,b)=>a+dayScore(b),0)/validDays.length);
   
   if (avg < 40) {
-    btnSOS.style.display = 'flex'; // Emergencia. Mostrar.
+    btnSOS.style.display = 'flex';
   } else {
-    btnSOS.style.display = 'none'; // Todo bien. Ocultar.
+    btnSOS.style.display = 'none';
   }
 }
 
-// RESPUESTAS DE REFLEXIÓN (Sí, Parcial, No)
 function setReflexion(di, q, val) {
   if(!DATA[di].qs) DATA[di].qs = {};
   DATA[di].qs[q] = val;
-  saveData(); render();
+  saveData(); 
+  render();
 }
 
-// RADAR CHART
 function renderRadar() {
   const svg = document.getElementById('radar-svg');
   const cx=120, cy=120, R=82, avgs=AREAS.map(a=>areaAvg(a.k)), isDark=window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -451,7 +488,6 @@ function renderRadar() {
   svg.innerHTML = html;
 }
 
-// HEATMAP
 function renderHeatmap() {
   const inner = document.getElementById('heat-inner');
   if(!DATA.length) { inner.innerHTML='<div style="color:var(--txt3);font-size:12px">Sin datos</div>'; return; }
@@ -462,7 +498,6 @@ function renderHeatmap() {
     `<div class="heat-legend">${[['bajo','rgba(123,114,233,.15)'],['medio','rgba(123,114,233,.4)'],['alto','rgba(123,114,233,.75)'],['óptimo','#7B72E9']].map(([l,c])=>`<div><div class="heat-legend-swatch" style="background:${c}"></div>${l}</div>`).join('')}</div>`;
 }
 
-// HABITS RENDERER (Solo muestra la lista)
 function renderHabitList(di) {
   const row = DATA[di];
   if(!row.habits) row.habits = defaultHabits();
@@ -471,28 +506,34 @@ function renderHabitList(di) {
     HABITOS[a.k].forEach(h => {
       let hd = row.habits[h] || {done:false, note:''};
       let streak = getStreak(h);
-      let fire = streak > 2 ? `<span class="habit-streak">🔥${streak}</span>` : '';
-      let timerBtn = TIMERS[h] && !hd.done ? `<button class="btn-timer" onclick="openTimer('${h.replace(/'/g, "&apos;")}', ${di}, ${TIMERS[h]})">⏱️</button>` : '';
+      let fire = streak > 2 ? `<span class="habit-streak">⬛ ${streak}</span>` : '';
+      let timerBtn = TIMERS[h] && !hd.done ? `<button class="btn-timer" onclick="openTimer('${h}', ${di}, ${TIMERS[h]})">⏲️</button>` : '';
       let bg = hd.done ? a.color : 'transparent';
       let chk = hd.done ? `<svg width="10" height="10"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="white" stroke-width="1.5" fill="none"/></svg>` : '';
       
-      // Fix del apóstrofe al inyectar HTML: h.replace(/'/g, "&apos;")
       html += `
       <div class="habit-row-wrap">
         <div class="habit-top">
-          <div class="habit-chk" style="background:${bg}; border-color:${hd.done?a.color:'var(--border2)'}" onclick="toggleHabit(${di}, '${h.replace(/'/g, "&apos;")}')">${chk}</div>
-          <div class="habit-name" style="text-decoration:${hd.done?'line-through':'none'}; color:${hd.done?'var(--txt3)':'var(--txt)'}" onclick="toggleHabit(${di}, '${h.replace(/'/g, "&apos;")}')">${h} ${fire}</div>
+          <div class="habit-chk" style="background:${bg}; border-color:${hd.done?a.color:'var(--border2)'}" onclick="toggleHabit(${di}, '${h}')">${chk}</div>
+          <div class="habit-name" style="text-decoration:${hd.done?'line-through':'none'}; color:${hd.done?'var(--txt3)':'var(--txt)'}" onclick="toggleHabit(${di}, '${h}')">${h} ${fire}</div>
           ${timerBtn}
         </div>
-        <input type="text" class="text-input habit-note" data-di="${di}" data-h="${h.replace(/'/g, "&apos;")}" value="${hd.note||''}" placeholder="Notas / Detalles...">
+        <input type="text" class="text-input habit-note" data-di="${di}" data-h="${h}" value="${hd.note||''}" placeholder="Notas / Detalles...">
       </div>`;
     });
     return html;
   }).join('');
 }
 
-// INTERACTIONS & DATA
-function toggleBody(di) { document.getElementById('body-'+di).classList.toggle('open'); }
+function toggleBody(di) { 
+  if (openDays.has(di)) {
+    openDays.delete(di);
+  } else {
+    openDays.add(di);
+  }
+  document.getElementById('body-'+di).classList.toggle('open'); 
+}
+
 function toggleHabit(di, h) { DATA[di].habits[h].done = !DATA[di].habits[h].done; saveData(); render(); }
 
 document.getElementById('btn-add-day').addEventListener('click', () => {
@@ -526,7 +567,6 @@ function handleImage(input, di) {
   reader.readAsDataURL(input.files[0]);
 }
 
-// INSIGHTS & WEEKLY
 function generateInsights() {
   const el = document.getElementById('insights-content');
   if(DATA.length < 3) return el.innerHTML = "Faltan datos para crear correlaciones (mínimo 3 días).";
@@ -552,7 +592,6 @@ function generateWeekly() {
   el.innerHTML = `Promedio últimos días: <b>${avg}%</b>. <br>Mantén el enfoque en tu misión.`;
 }
 
-// VAULT
 function renderVault(filter = "") {
   const el = document.getElementById('vault-content');
   let html = ""; let f = filter.toLowerCase();
@@ -571,10 +610,11 @@ function renderVault(filter = "") {
   el.innerHTML = html || "<div style='color:var(--txt3); font-size:12px;'>No hay notas que coincidan.</div>";
 }
 
-// MODALS / THEMES / TIMERS
 document.getElementById('btn-theme').addEventListener('click', () => {
   document.body.classList.toggle('dark-mode');
-  localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
+  const isDark = document.body.classList.contains('dark-mode');
+  localStorage.setItem('theme', isDark ? 'dark' : 'light');
+  document.getElementById('btn-theme').textContent = isDark ? '⚪' : '⚫';
 });
 
 document.getElementById('btn-sos').addEventListener('click', () => {
@@ -665,8 +705,8 @@ document.getElementById('btn-future').addEventListener('click', () => {
   let projGym = Math.round(rateGym * 365);
   
   let msg = `Basado en tu disciplina actual, de aquí a un año habrás acumulado:<br><br>`;
-  msg += `<b>👨‍🍳 ${projChef} días de aprendizaje chef</b><br>`;
-  msg += `<b>💪 ${projGym} días de entrenamiento</b><br><br>`;
+  msg += `<b>⚫ ${projChef} días de aprendizaje chef</b><br>`;
+  msg += `<b>🔲 ${projGym} días de entrenamiento</b><br><br>`;
   
   if(rateChef > 0.8) msg += `<span style="color:var(--cuerpo)">Estás en camino a ser imparable en la cocina.</span>`;
   else msg += `<span style="color:var(--mision)">Si quieres ser un gran chef, este número debe subir. No negocies tus metas.</span>`;
