@@ -1,5 +1,4 @@
-``html
-<!DOCTYPE html>
+Superman 
 <html lang="es">
 <head>
 <meta charset="UTF-8">
@@ -1269,6 +1268,3 @@ init();
 </script>
 </body>
 </html>
-
-
-```
