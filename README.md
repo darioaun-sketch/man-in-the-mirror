@@ -1,4 +1,4 @@
-Superman 
+<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
@@ -36,7 +36,7 @@ Superman
     font-size: 14px; font-weight: 400; line-height: 1.5; 
     padding: 24px 20px 80px; max-width: 680px; margin: 0 auto; 
     transition: background 0.2s ease, color 0.2s ease; 
-    touch-action: manipulation; /* Elimina lag táctil de 300ms */
+    touch-action: manipulation;
     -webkit-font-smoothing: antialiased;
   }
 
@@ -90,10 +90,13 @@ Superman
   .day-body.open { display: block; }
   @keyframes slideDown { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
 
+  .day-title-edit { outline: none; border-bottom: 1px dashed transparent; transition: border 0.2s; padding-bottom: 2px;}
+  .day-title-edit:focus { border-bottom-color: var(--txt); }
+
   .section-title { font-size: 11px; font-weight: 700; color: var(--txt3); text-transform: uppercase; letter-spacing: 0.05em; margin: 20px 0 12px; display: flex; justify-content: space-between; align-items: center;}
 
   .habit-row-wrap { margin-bottom: 12px; border-bottom: 1px solid var(--border); padding-bottom: 12px; }
-  .habit-top { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; min-height: 44px; /* Tap target óptimo */ }
+  .habit-top { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; min-height: 44px; }
   .habit-chk { width: 32px; height: 32px; border-radius: 8px; border: 2px solid var(--border2); cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: transform 0.1s; }
   .habit-chk:active { transform: scale(0.85); }
   .habit-name { font-size: 14px; font-weight: 500; flex: 1; cursor: pointer; user-select: none; }
@@ -101,7 +104,7 @@ Superman
   .btn-timer { background: var(--txt); border: none; border-radius: 8px; width: 44px; height: 44px; font-size: 18px; cursor: pointer; color: var(--bg); display: flex; justify-content: center; align-items: center;}
   .btn-timer:active { opacity: 0.8; }
   
-  .text-input, .journal-input { width: 100%; border: 1px solid var(--border2); border-radius: 10px; padding: 12px 14px; font-size: 14px; font-family: inherit; background: var(--bg); color: var(--txt); outline: none; margin-bottom: 8px; }
+  .text-input, .journal-input { width: 100%; border: 1px solid var(--border2); border-radius: 10px; padding: 12px 14px; font-size: 14px; font-family: inherit; background: var(--bg); color: var(--txt); outline: none; margin-bottom: 8px; transition: border-color 0.2s ease; }
   .text-input:focus, .journal-input:focus { border-color: var(--fe); }
   .journal-input { min-height: 100px; resize: vertical; line-height: 1.6; }
   .excuse-warning { color: var(--sos); font-size: 11px; font-weight: 700; text-transform: uppercase; margin-top: 4px; display: none; }
@@ -130,7 +133,8 @@ Superman
   .sos-title { color: var(--sos); font-size: 28px; font-weight: 700; text-transform: uppercase; margin-bottom: 15px; }
   .modal-btn { background: var(--txt); color: var(--bg); border: none; padding: 14px 20px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; margin-top: 10px; width: 100%; }
 
-  .delete-btn { background: var(--bg3); border: none; color: var(--txt); font-weight: bold; cursor: pointer; width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center;}
+  .delete-btn { background: var(--bg3); border: none; color: var(--txt); font-weight: bold; cursor: pointer; padding: 6px 12px; border-radius: 8px; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+  .delete-btn:active { transform: scale(0.9); }
   
   /* Toasts */
   #toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
@@ -143,7 +147,6 @@ Superman
 
   .color-swatch { width: 32px; height: 32px; border-radius: 50%; cursor: pointer; display: inline-block; margin: 6px; border: 2px solid transparent; }
   
-  /* Botones de Reflexión (Radio behavior) */
   .ref-btn { flex: 1; padding: 10px 6px; font-size: 12px; font-weight: 600; border: 1px solid var(--border); border-radius: 8px; background: var(--bg2); color: var(--txt2); cursor: pointer; transition: background 0.1s; }
   .ref-btn.selected { background: var(--txt); color: var(--bg); border-color: var(--txt); }
 </style>
@@ -399,8 +402,11 @@ Superman
 const STORAGE_KEY = 'man_in_the_mirror_ultimate';
 
 let openDays = new Set();
-let appLockedUntil = localStorage.getItem('mitm_lock') || 0;
-let settings = JSON.parse(localStorage.getItem('mitm_settings')) || { color: '#7B72E9', hellMode: false, currentStreak: 0 };
+let appLockedUntil = 0;
+try { appLockedUntil = localStorage.getItem('mitm_lock') || 0; } catch(e){}
+
+let settings = { color: '#7B72E9', hellMode: false, currentStreak: 0 };
+try { settings = JSON.parse(localStorage.getItem('mitm_settings')) || settings; } catch(e){}
 
 const AREAS = [
   { k:"fe",     label:"Fe & espíritu",         color: () => settings.color },
@@ -410,20 +416,21 @@ const AREAS = [
   { k:"car",    label:"Carácter & disciplina", color: () => "#888884" },
 ];
 
-let HABITOS = JSON.parse(localStorage.getItem('mitm_habitos')) || {
+let HABITOS = {
   fe: ["Leer la Biblia 30 min", "Reflexión nocturna"],
   mente: ["Leer You Can't Hurt Me 30 min", "Estudiar 1 hora"],
   mision: ["Avanzar aplicación", "El diario del chef"],
   cuerpo: ["Entrenar", "3 litros de agua", "Cumplir Macros", "Ducha fría", "Dormir 8–9 horas"],
   car: ["Cumplir horario del día", "Mantener espacio limpio"]
 };
+try { HABITOS = JSON.parse(localStorage.getItem('mitm_habitos')) || HABITOS; } catch(e){}
 
 const QS = [
   { q:"¿Oré/medité profundamente hoy?", area:"fe" },
   { q:"¿Mantuve mi propósito por encima de mi ego?", area:"fe" },
   { q:"¿Aprendí algo nuevo y aplicable hoy?", area:"mente" },
   { q:"¿Mantuve concentración profunda (Deep Work)?", area:"mente" },
-  { q:"¿Avanzé en mi aprendizaje de forma táctica?", area:"mision" },
+  { q:"¿Avancé en mi aprendizaje de forma táctica?", area:"mision" },
   { q:"¿Tomé decisiones pensando a largo plazo?", area:"mision" },
   { q:"¿Entrené con la intensidad necesaria?", area:"cuerpo" },
   { q:"¿Evité la comida chatarra/azúcares inútiles?", area:"cuerpo" },
@@ -442,7 +449,8 @@ const QUOTES = [
 
 const VAL = { "Sí":2, "Parcial":1, "No":0 };
 let DATA = { days: [], cookies: [] }; 
-let quickTasks = JSON.parse(localStorage.getItem('mitm_quick')) || [];
+let quickTasks = [];
+try { quickTasks = JSON.parse(localStorage.getItem('mitm_quick')) || []; } catch(e){}
 
 const DIAS_ES = ["Dom","Lun","Mar","Mié","Jue","Vie","Sáb"];
 const MESES_ES = ["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"];
@@ -508,6 +516,7 @@ function checkLock() {
       <h1 style="margin:0 0 10px; font-weight:800;">APLICACIÓN BLOQUEADA</h1>
       <p style="font-size:16px; font-weight:500;">Ve a hacer el trabajo. El bloqueo se levantará en unos minutos.</p>
     </div>`;
+    setTimeout(() => location.reload(), appLockedUntil - Date.now());
   }
 }
 
@@ -614,7 +623,9 @@ function init() {
   checkLock();
   document.getElementById('daily-quote').textContent = `"${QUOTES[Math.floor(Math.random() * QUOTES.length)]}"`;
   
-  const saved = Storage.get(STORAGE_KEY);
+  let saved = null;
+  try { saved = localStorage.getItem(STORAGE_KEY); } catch(e){}
+
   if (saved) {
     try {
       let parsed = JSON.parse(saved);
@@ -630,7 +641,9 @@ function init() {
   setPrimaryColor(settings.color);
   autoCreateToday();
 
-  if(Storage.get('theme') === 'light') {
+  let theme = 'dark';
+  try { theme = localStorage.getItem('theme') || 'dark'; } catch(e){}
+  if(theme === 'light') {
     document.body.classList.remove('dark-mode');
     document.getElementById('btn-theme').textContent = '🌙';
   }
@@ -639,7 +652,6 @@ function init() {
   renderConfigHabits();
   render();
 
-  // Watch for Day Change
   setInterval(() => {
     const today = getTodayLabel();
     if (DATA.days && !DATA.days.some(r => r.d === today)) { autoCreateToday(); render(); }
@@ -655,7 +667,6 @@ document.querySelectorAll('.tab').forEach(btn => {
     document.querySelectorAll('.panel').forEach(p=>p.classList.remove('visible'));
     btn.classList.add('active');
     
-    // Suavizado visual sin lag de JS pesado
     requestAnimationFrame(() => {
       document.getElementById('panel-'+btn.dataset.tab).classList.add('visible');
       render();
@@ -678,7 +689,6 @@ function render() {
   document.getElementById('rank-title').textContent = getRank(eliteDaysCount);
   document.getElementById('rank-badge').textContent = getRank(eliteDaysCount);
 
-  // Modo Infierno Lógica
   document.getElementById('btn-hell-mode').textContent = settings.hellMode ? "Desactivar Modo Infierno" : "Activar Modo Infierno";
   if (settings.hellMode && validScores.length > 0) {
     if (validScores[validScores.length-1] < 80 && !DATA.days[DATA.days.length-1].restDay) settings.currentStreak = 0;
@@ -691,7 +701,6 @@ function render() {
   
   checkSOS();
   
-  // RENDER TAB: RESUMEN
   if(document.getElementById('panel-resumen').classList.contains('visible')) {
     document.getElementById('m-best').textContent = validScores.length ? Math.max(...validScores)+'%' : '—';
     document.getElementById('m-racha').textContent = settings.hellMode ? `${settings.currentStreak} d (Inf)` : `${DATA.days.length} d`;
@@ -718,7 +727,6 @@ function render() {
     renderRadar();
   }
   
-  // RENDER TAB: ÁREAS
   if(document.getElementById('panel-areas').classList.contains('visible')) {
     document.getElementById('areas-grid').innerHTML = AREAS.map(a => {
       let avg = areaAvg(a.k) || 0;
@@ -733,15 +741,12 @@ function render() {
     }).join('');
   }
 
-  // RENDER TAB: HOY (Hábitos)
   if(document.getElementById('panel-habitos').classList.contains('visible')) {
     if(!DATA.days.length) return document.getElementById('habitos-grid').innerHTML = '<div style="color:var(--txt3);text-align:center;">No hay días aún.</div>';
     document.getElementById('habitos-grid').innerHTML = renderHabitList(DATA.days.length-1);
   }
 
-  // RENDER TAB: TRACKER (Diario)
   if(document.getElementById('panel-tracker').classList.contains('visible')) {
-    // Para optimización en móviles, solo renderiza los últimos 30 días, con un botón para cargar más si es necesario.
     let displayDays = DATA.days.slice(-30).reverse();
     let renderIndexOffset = DATA.days.length - 1;
     
@@ -753,10 +758,13 @@ function render() {
       return `
       <div class="day-row">
         <div class="day-header" onclick="toggleBody(${di})">
-          <div style="font-weight:700; font-size:15px;">${r.d}${isAuto}</div>
+          <div style="font-weight:700; font-size:15px; display:flex; align-items:center; gap:8px;" onclick="event.stopPropagation()">
+             <div contenteditable="true" onblur="updateDayTitle(${di}, this.innerText)" style="outline:none; border-bottom:1px dashed var(--border2); padding-bottom:2px;">${r.d}</div>
+             ${isAuto}
+          </div>
           <div style="display:flex; align-items:center; gap:12px;">
             <span style="font-weight:600; font-size:15px;">${sc}</span>
-            <button class="delete-btn" onclick="event.stopPropagation(); deleteDay(${di})">✕</button>
+            <button class="delete-btn" onclick="event.stopPropagation(); deleteDaySafe(${di}, this)">✕</button>
           </div>
         </div>
         <div class="day-body ${openDays.has(di) ? 'open' : ''}" id="body-${di}">
@@ -804,14 +812,14 @@ function render() {
           </div>
           
           <div style="margin-top:20px; text-align:right;">
-             <button class="btn" style="background:transparent; border-color:var(--txt);" onclick="shareDay(${di})">Compartir Reporte 📤</button>
+             <button class="btn-add" style="background:transparent; border:1px solid var(--txt); color:var(--txt);" onclick="shareDay(${di})">Compartir Reporte 📤</button>
           </div>
         </div>
       </div>`;
     }).join('');
     
     if (DATA.days.length > 30) {
-        document.getElementById('tracker-rows').innerHTML += `<div style="text-align:center; color:var(--txt3); font-size:12px; margin-top:20px;">Mostrando los últimos 30 días. Los datos antiguos están seguros.</div>`;
+        document.getElementById('tracker-rows').innerHTML += `<div style="text-align:center; color:var(--txt3); font-size:12px; margin-top:20px;">Mostrando los últimos 30 días.</div>`;
     }
   }
   
@@ -829,12 +837,21 @@ function shareDay(di) {
   showToast("Reporte copiado al portapapeles 📤");
 }
 
+function updateDayTitle(di, val) { DATA.days[di].d = val; saveData(); }
 function toggleRestDay(di, val) { DATA.days[di].restDay = val; saveData(); render(); showToast(val ? "Día de Descanso. Recupérate." : "Descanso desactivado."); }
 function updateWeight(di, val) { DATA.days[di].weight = val; saveData(); }
 
-function deleteDay(di) {
-  if (!confirm(`¿Eliminar de forma permanente "${DATA.days[di].d}"?`)) return;
-  DATA.days.splice(di, 1); openDays.delete(di); saveData(); render();
+function deleteDaySafe(di, btn) {
+  if(btn.dataset.confirm !== 'true') {
+    btn.dataset.confirm = 'true';
+    const oldHtml = btn.innerHTML;
+    btn.innerHTML = '⚠️'; btn.style.background = 'var(--sos)'; btn.style.color = 'white';
+    setTimeout(() => {
+      if(btn) { btn.dataset.confirm = 'false'; btn.innerHTML = oldHtml; btn.style.background = ''; btn.style.color = ''; }
+    }, 3000);
+    return;
+  }
+  DATA.days.splice(di, 1); openDays.delete(di); saveData(); render(); showToast("Día eliminado");
 }
 
 function checkSOS() {
@@ -926,7 +943,7 @@ function renderHabitList(di) {
 }
 
 function toggleBody(di) { 
-  if (openDays.has(di)) { openDays.delete(di); } else { openDays.add(di); }
+  if (openDays.has(di)) openDays.delete(di); else openDays.add(di);
   const el = document.getElementById('body-'+di);
   if (el) el.classList.toggle('open'); 
 }
@@ -940,17 +957,15 @@ function toggleHabit(di, h) {
 }
 
 document.getElementById('btn-add-day').addEventListener('click', () => {
-  let d = prompt("Introduce fecha del día (Ej: Lun 16 Oct):", getTodayLabel());
-  if(d) { 
-    DATA.days.push({ d, note:'', qs:{}, habits:defaultHabits(), auto: false, imgs: [], weight: '', restDay: false }); 
-    const newDi = DATA.days.length - 1;
-    openDays.add(newDi); 
-    saveData(); render(); showToast('Día Histórico Añadido');
-    setTimeout(()=> { document.getElementById('body-'+newDi).scrollIntoView({behavior: 'smooth', block: 'center'}); }, 100);
-  }
+  let d = getTodayLabel() + " (Añadido)";
+  DATA.days.push({ d, note:'', qs:{}, habits:defaultHabits(), auto: false, imgs: [], weight: '', restDay: false }); 
+  const newDi = DATA.days.length - 1;
+  openDays.add(newDi); 
+  saveData(); render(); showToast('Día creado. Toca su título para editar el nombre.');
+  setTimeout(()=> { document.getElementById('body-'+newDi).scrollIntoView({behavior: 'smooth', block: 'center'}); }, 100);
 });
 
-// Event Delegation for inputs to avoid heavy rendering
+// Event Delegation for inputs
 document.addEventListener('input', e => {
   if(e.target.classList.contains('journal-input')) { 
     let val = e.target.value;
@@ -978,7 +993,7 @@ function renderConfigHabits() {
     return `
     <div style="display:flex; justify-content:space-between; align-items:center; background:var(--bg2); padding:10px 14px; margin-bottom:6px; border-radius:8px; border:1px solid var(--border); font-size:13px; font-weight:500;">
       <span>${h}</span>
-      <button class="delete-btn" onclick="deleteHabitConfig('${area}', ${i})">✕</button>
+      <button class="delete-btn" onclick="deleteHabitSafe('${area}', ${i}, this)">✕</button>
     </div>`;
   }).join('');
 }
@@ -989,19 +1004,24 @@ function addNewHabit() {
     HABITOS[area].push(val);
     try { localStorage.setItem('mitm_habitos', JSON.stringify(HABITOS)); } catch(e){}
     document.getElementById('new-habit-input').value = '';
-    renderConfigHabits(); render(); showToast('Nuevo hábito en el arsenal');
+    renderConfigHabits(); render(); showToast('Nuevo hábito guardado');
   }
 }
-function deleteHabitConfig(area, index) {
-  if(confirm('¿Eliminar este hábito de la lista maestra? (No borrará tu historial pasado)')) {
-    HABITOS[area].splice(index, 1);
-    try { localStorage.setItem('mitm_habitos', JSON.stringify(HABITOS)); } catch(e){}
-    renderConfigHabits(); render(); showToast('Hábito eliminado');
+function deleteHabitSafe(area, index, btn) {
+  if(btn.dataset.confirm !== 'true') {
+    btn.dataset.confirm = 'true';
+    const oldHtml = btn.innerHTML;
+    btn.innerHTML = '⚠️'; btn.style.background = 'var(--sos)'; btn.style.color = 'white';
+    setTimeout(() => { if(btn) { btn.dataset.confirm = 'false'; btn.innerHTML = oldHtml; btn.style.background = ''; btn.style.color = ''; } }, 3000);
+    return;
   }
+  HABITOS[area].splice(index, 1);
+  try { localStorage.setItem('mitm_habitos', JSON.stringify(HABITOS)); } catch(e){}
+  renderConfigHabits(); render(); showToast('Hábito eliminado');
 }
 
 // =========================================================================
-// FUNCIONES ADICIONALES (Cookie Jar, Fotos, Bóveda, Export)
+// COOKIE JAR, VAULT, IMAGES, EXPORT
 // =========================================================================
 document.getElementById('btn-add-cookie').addEventListener('click', () => {
   const input = document.getElementById('cookie-input');
@@ -1026,10 +1046,10 @@ function handleImage(input, di) {
     const img = new Image();
     img.onload = () => {
       const cvs = document.createElement('canvas');
-      const MAX_W = 600; const scale = Math.min(MAX_W / img.width, 1); // Compression
+      const MAX_W = 600; const scale = Math.min(MAX_W / img.width, 1); 
       cvs.width = img.width * scale; cvs.height = img.height * scale;
       cvs.getContext('2d').drawImage(img, 0, 0, cvs.width, cvs.height);
-      const b64 = cvs.toDataURL('image/jpeg', 0.6); // Compression 60%
+      const b64 = cvs.toDataURL('image/jpeg', 0.6); 
       if(!DATA.days[di].imgs) DATA.days[di].imgs = [];
       DATA.days[di].imgs.push(b64); saveData(); render();
     }
@@ -1047,6 +1067,12 @@ function generateInsights(validScores) {
   
   let txt = `Cuando duermes tus horas, rindes al <b>${sleepScoreAvg}%</b> de tu capacidad. `;
   
+  if(validScores.length >= 14) {
+    let last7 = validScores.slice(-7).reduce((a,b)=>a+b,0)/7;
+    let prev7 = validScores.slice(-14, -7).reduce((a,b)=>a+b,0)/7;
+    if(last7 > prev7) txt += `<br><span style="color:var(--cuerpo)">📈 Has mejorado respecto a la semana pasada.</span>`;
+    else txt += `<br><span style="color:var(--sos)">📉 Tu rendimiento cayó respecto a la semana anterior.</span>`;
+  }
   el.innerHTML = txt;
 }
 
@@ -1104,8 +1130,8 @@ function importData(e) {
       const importedData = JSON.parse(ev.target.result);
       if(importedData.days) { DATA = importedData; saveData(); showToast("Sistema Restaurado"); setTimeout(()=>location.reload(),1000); } 
       else if (Array.isArray(importedData)) { DATA = { days: importedData, cookies: [] }; saveData(); showToast("Datos migrados"); setTimeout(()=>location.reload(),1000); } 
-      else { alert("Archivo JSON inválido."); }
-    } catch(err) { alert("Error al leer el archivo JSON."); }
+      else { showToast("Error: Archivo JSON no reconocido"); }
+    } catch(err) { showToast("Error: JSON corrupto"); }
   };
   reader.readAsText(file);
 }
@@ -1118,14 +1144,14 @@ function exportVault() {
 }
 
 // =========================================================================
-// MODALS LOGIC (Timer, Mirror, Future, 2-Min)
+// MODALS LOGIC (Timer, Mirror, Future, Quick)
 // =========================================================================
 let timerInterval = null, timerSeconds = 0, timerRunning = false, timerDi = -1, timerHabit = '';
 
 function openTimer(habit, di) {
   const modal = document.getElementById('modal-timer');
   timerHabit = habit; timerDi = di; timerRunning = false;
-  document.getElementById('timer-input-m').value = 45; // Default 45m deep work
+  document.getElementById('timer-input-m').value = 45; 
   document.getElementById('timer-display-s').textContent = "00";
   document.getElementById('timer-title').textContent = `Enfoque: ${habit}`;
   document.getElementById('btn-timer-action').textContent = '▶ Iniciar';
@@ -1173,7 +1199,6 @@ function checkMirror() {
   if(last.restDay) return;
   const hs = Object.values(HABITOS).flat();
   let doneCount = hs.filter(h => last.habits?.[h]?.done).length;
-  // If performance was terribly low yesterday/today, trigger confrontation
   if (doneCount < Math.floor(hs.length * 0.4) && DATA.days.length >= 2) {
     document.getElementById('mirror-text').innerHTML = `
       El espejo no miente. Tú sabes que estás rindiendo muy por debajo de tu potencial.<br><br>
@@ -1191,9 +1216,7 @@ document.getElementById('mirror-input').addEventListener('input', function() {
     btn.disabled = true; btn.style.background = 'var(--txt3)'; btn.style.cursor = 'not-allowed';
   }
 });
-document.getElementById('btn-mirror-unlock').addEventListener('click', () => {
-  document.getElementById('modal-mirror').classList.remove('active');
-});
+document.getElementById('btn-mirror-unlock').addEventListener('click', () => { document.getElementById('modal-mirror').classList.remove('active'); });
 
 document.getElementById('btn-future').addEventListener('click', () => {
   const avg = DATA.days.map(dayScore).filter(v=>v!=null);
@@ -1238,14 +1261,13 @@ function removeQuick(i) {
 
 document.getElementById('btn-sos').addEventListener('click', () => { document.getElementById('modal-sos').classList.add('active'); });
 
-// Keyboard Shortcuts (PC)
 document.addEventListener('keydown', e => {
   if(e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
   if(e.key.toLowerCase() === 'h') document.querySelector('.tab[data-tab="habitos"]').click();
   if(e.key.toLowerCase() === 'd') document.querySelector('.tab[data-tab="tracker"]').click();
 });
 
-// START
+// INITIALIZE
 init();
 
 /* =========================================================================
