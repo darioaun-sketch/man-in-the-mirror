@@ -88,10 +88,9 @@
   .day-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; cursor: pointer; background: var(--bg2); }
   .day-body { display: none; padding: 0 20px 20px; border-top: 1px solid var(--border); animation: slideDown 0.2s ease forwards; }
   .day-body.open { display: block; }
-  @keyframes slideDown { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
-
   .day-title-edit { outline: none; border-bottom: 1px dashed transparent; transition: border 0.2s; padding-bottom: 2px;}
   .day-title-edit:focus { border-bottom-color: var(--txt); }
+  @keyframes slideDown { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
 
   .section-title { font-size: 11px; font-weight: 700; color: var(--txt3); text-transform: uppercase; letter-spacing: 0.05em; margin: 20px 0 12px; display: flex; justify-content: space-between; align-items: center;}
 
@@ -124,14 +123,15 @@
   /* Modals */
   .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 20px; opacity: 0; transition: opacity 0.2s; }
   .modal-overlay.active { display: flex; opacity: 1; }
-  .modal-box { background: var(--bg); border-radius: 20px; padding: 28px; max-width: 420px; width: 100%; text-align: center; border: 1px solid var(--border); transform: scale(0.95); transition: transform 0.2s; }
+  .modal-box { background: var(--bg); border-radius: 20px; padding: 28px; max-width: 420px; width: 100%; text-align: center; border: 1px solid var(--border); transform: scale(0.95); transition: transform 0.2s; position: relative; }
   .modal-overlay.active .modal-box { transform: scale(1); }
   
   .timer-display { font-size: 64px; font-weight: 300; font-family: 'Cormorant Garamond', serif; margin: 10px 0; font-variant-numeric: tabular-nums; display: flex; justify-content: center; align-items: center; }
   .timer-input { background: transparent; border: none; border-bottom: 2px solid var(--txt); color: var(--txt); font-size: 64px; font-weight: 300; font-family: inherit; width: 90px; text-align: center; outline: none; }
   
   .sos-title { color: var(--sos); font-size: 28px; font-weight: 700; text-transform: uppercase; margin-bottom: 15px; }
-  .modal-btn { background: var(--txt); color: var(--bg); border: none; padding: 14px 20px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; margin-top: 10px; width: 100%; }
+  .modal-btn { background: var(--txt); color: var(--bg); border: none; padding: 14px 20px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; margin-top: 10px; width: 100%; transition: opacity 0.2s; }
+  .modal-btn:hover { opacity: 0.85; }
 
   .delete-btn { background: var(--bg3); border: none; color: var(--txt); font-weight: bold; cursor: pointer; padding: 6px 12px; border-radius: 8px; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
   .delete-btn:active { transform: scale(0.9); }
@@ -330,7 +330,20 @@
   </div>
 </div>
 
+<button class="sos-btn" id="btn-sos" title="Protocolo de Emergencia">🚨</button>
+<button class="quick-task-btn" id="btn-quick-fab" style="display:none;">⚡</button>
+
 <!-- MODALS GLOBALES -->
+<div class="modal-overlay" id="modal-add-day">
+  <div class="modal-box">
+    <div class="card-label" style="justify-content:center; font-size:14px;">Añadir Día Histórico</div>
+    <p style="font-size:13px; color:var(--txt2); margin-bottom:16px;">Introduce la fecha o el nombre del día.</p>
+    <input type="text" id="input-new-day-name" class="text-input" style="text-align:center; font-weight:bold; font-size:16px; padding:12px;">
+    <button class="modal-btn" id="btn-confirm-add-day" style="font-size:16px; padding:14px; margin-top:20px;">✚ Crear Día</button>
+    <button class="modal-btn" style="background:transparent; color:var(--txt3); margin-top:8px;" onclick="document.getElementById('modal-add-day').classList.remove('active')">Cancelar</button>
+  </div>
+</div>
+
 <div class="modal-overlay" id="modal-timer">
   <div class="modal-box">
     <div class="card-label" id="timer-title" style="justify-content:center; font-size:14px;">Modo Enfoque</div>
@@ -623,6 +636,18 @@ function init() {
   checkLock();
   document.getElementById('daily-quote').textContent = `"${QUOTES[Math.floor(Math.random() * QUOTES.length)]}"`;
   
+  // 1. Cargar Theme antes que nada
+  let theme = 'dark';
+  try { theme = localStorage.getItem('theme') || 'dark'; } catch(e){}
+  
+  if(theme === 'light') {
+    document.body.classList.remove('dark-mode');
+    document.getElementById('btn-theme').textContent = '🌙';
+  } else {
+    document.body.classList.add('dark-mode');
+    document.getElementById('btn-theme').textContent = '☀️';
+  }
+
   let saved = null;
   try { saved = localStorage.getItem(STORAGE_KEY); } catch(e){}
 
@@ -640,13 +665,6 @@ function init() {
   
   setPrimaryColor(settings.color);
   autoCreateToday();
-
-  let theme = 'dark';
-  try { theme = localStorage.getItem('theme') || 'dark'; } catch(e){}
-  if(theme === 'light') {
-    document.body.classList.remove('dark-mode');
-    document.getElementById('btn-theme').textContent = '🌙';
-  }
   
   checkMirror();
   renderConfigHabits();
@@ -689,6 +707,7 @@ function render() {
   document.getElementById('rank-title').textContent = getRank(eliteDaysCount);
   document.getElementById('rank-badge').textContent = getRank(eliteDaysCount);
 
+  // Modo Infierno Lógica
   document.getElementById('btn-hell-mode').textContent = settings.hellMode ? "Desactivar Modo Infierno" : "Activar Modo Infierno";
   if (settings.hellMode && validScores.length > 0) {
     if (validScores[validScores.length-1] < 80 && !DATA.days[DATA.days.length-1].restDay) settings.currentStreak = 0;
@@ -701,6 +720,7 @@ function render() {
   
   checkSOS();
   
+  // RENDER TAB: RESUMEN
   if(document.getElementById('panel-resumen').classList.contains('visible')) {
     document.getElementById('m-best').textContent = validScores.length ? Math.max(...validScores)+'%' : '—';
     document.getElementById('m-racha').textContent = settings.hellMode ? `${settings.currentStreak} d (Inf)` : `${DATA.days.length} d`;
@@ -727,6 +747,7 @@ function render() {
     renderRadar();
   }
   
+  // RENDER TAB: ÁREAS
   if(document.getElementById('panel-areas').classList.contains('visible')) {
     document.getElementById('areas-grid').innerHTML = AREAS.map(a => {
       let avg = areaAvg(a.k) || 0;
@@ -741,11 +762,13 @@ function render() {
     }).join('');
   }
 
+  // RENDER TAB: HOY (Hábitos)
   if(document.getElementById('panel-habitos').classList.contains('visible')) {
     if(!DATA.days.length) return document.getElementById('habitos-grid').innerHTML = '<div style="color:var(--txt3);text-align:center;">No hay días aún.</div>';
     document.getElementById('habitos-grid').innerHTML = renderHabitList(DATA.days.length-1);
   }
 
+  // RENDER TAB: TRACKER (Diario)
   if(document.getElementById('panel-tracker').classList.contains('visible')) {
     let displayDays = DATA.days.slice(-30).reverse();
     let renderIndexOffset = DATA.days.length - 1;
@@ -756,7 +779,7 @@ function render() {
       const sc = r.restDay ? '💤' : (dayScore(r)!=null?dayScore(r)+'%':'—');
       let excuseWarn = EXCUSE_REGEX.test(r.note || '') ? 'block' : 'none';
       return `
-      <div class="day-row">
+      <div class="day-row" id="day-row-${di}">
         <div class="day-header" onclick="toggleBody(${di})">
           <div style="font-weight:700; font-size:15px; display:flex; align-items:center; gap:8px;" onclick="event.stopPropagation()">
              <div contenteditable="true" onblur="updateDayTitle(${di}, this.innerText)" style="outline:none; border-bottom:1px dashed var(--border2); padding-bottom:2px;">${r.d}</div>
@@ -819,7 +842,7 @@ function render() {
     }).join('');
     
     if (DATA.days.length > 30) {
-        document.getElementById('tracker-rows').innerHTML += `<div style="text-align:center; color:var(--txt3); font-size:12px; margin-top:20px;">Mostrando los últimos 30 días.</div>`;
+        document.getElementById('tracker-rows').innerHTML += `<div style="text-align:center; color:var(--txt3); font-size:12px; margin-top:20px;">Mostrando los últimos 30 días. Los datos antiguos están seguros.</div>`;
     }
   }
   
@@ -943,26 +966,44 @@ function renderHabitList(di) {
 }
 
 function toggleBody(di) { 
-  if (openDays.has(di)) openDays.delete(di); else openDays.add(di);
-  const el = document.getElementById('body-'+di);
-  if (el) el.classList.toggle('open'); 
+  if (openDays.has(di)) {
+    openDays.delete(di);
+    document.getElementById('body-'+di).classList.remove('open');
+  } else {
+    openDays.add(di);
+    document.getElementById('body-'+di).classList.add('open');
+  }
 }
 
 function toggleHabit(di, h) { 
   if (!DATA.days[di].habits) DATA.days[di].habits = defaultHabits();
   if (!DATA.days[di].habits[h]) DATA.days[di].habits[h] = {done: false, note: ''};
   DATA.days[di].habits[h].done = !DATA.days[di].habits[h].done; 
-  if(DATA.days[di].habits[h].done) { playDing(); showToast('Victoria asegurada 🔥'); }
+  if(DATA.days[di].habits[h].done) { playDing(); showToast('¡Hábito marcado! 🔥'); }
   saveData(); render(); 
 }
 
+// ─── Añadir Día Manual con Modal Personalizado ───────────────
 document.getElementById('btn-add-day').addEventListener('click', () => {
-  let d = getTodayLabel() + " (Añadido)";
-  DATA.days.push({ d, note:'', qs:{}, habits:defaultHabits(), auto: false, imgs: [], weight: '', restDay: false }); 
-  const newDi = DATA.days.length - 1;
-  openDays.add(newDi); 
-  saveData(); render(); showToast('Día creado. Toca su título para editar el nombre.');
-  setTimeout(()=> { document.getElementById('body-'+newDi).scrollIntoView({behavior: 'smooth', block: 'center'}); }, 100);
+  document.getElementById('input-new-day-name').value = getTodayLabel();
+  document.getElementById('modal-add-day').classList.add('active');
+});
+
+document.getElementById('btn-confirm-add-day').addEventListener('click', () => {
+  let d = document.getElementById('input-new-day-name').value.trim();
+  if(d) {
+    DATA.days.push({ d, note:'', qs:{}, habits:defaultHabits(), auto: false, imgs: [], weight: '', restDay: false }); 
+    const newDi = DATA.days.length - 1;
+    openDays.add(newDi); 
+    saveData(); 
+    render(); 
+    document.getElementById('modal-add-day').classList.remove('active');
+    showToast('Día añadido al historial');
+    setTimeout(()=> { 
+      const row = document.getElementById('day-row-'+newDi);
+      if(row) row.scrollIntoView({behavior: 'smooth', block: 'center'}); 
+    }, 150);
+  }
 });
 
 // Event Delegation for inputs
@@ -1004,7 +1045,7 @@ function addNewHabit() {
     HABITOS[area].push(val);
     try { localStorage.setItem('mitm_habitos', JSON.stringify(HABITOS)); } catch(e){}
     document.getElementById('new-habit-input').value = '';
-    renderConfigHabits(); render(); showToast('Nuevo hábito guardado');
+    renderConfigHabits(); render(); showToast('Hábito añadido al sistema');
   }
 }
 function deleteHabitSafe(area, index, btn) {
@@ -1130,7 +1171,7 @@ function importData(e) {
       const importedData = JSON.parse(ev.target.result);
       if(importedData.days) { DATA = importedData; saveData(); showToast("Sistema Restaurado"); setTimeout(()=>location.reload(),1000); } 
       else if (Array.isArray(importedData)) { DATA = { days: importedData, cookies: [] }; saveData(); showToast("Datos migrados"); setTimeout(()=>location.reload(),1000); } 
-      else { showToast("Error: Archivo JSON no reconocido"); }
+      else { showToast("Error: Archivo JSON no válido"); }
     } catch(err) { showToast("Error: JSON corrupto"); }
   };
   reader.readAsText(file);
@@ -1261,13 +1302,14 @@ function removeQuick(i) {
 
 document.getElementById('btn-sos').addEventListener('click', () => { document.getElementById('modal-sos').classList.add('active'); });
 
+// Keyboard Shortcuts (PC)
 document.addEventListener('keydown', e => {
   if(e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
   if(e.key.toLowerCase() === 'h') document.querySelector('.tab[data-tab="habitos"]').click();
   if(e.key.toLowerCase() === 'd') document.querySelector('.tab[data-tab="tracker"]').click();
 });
 
-// INITIALIZE
+// START
 init();
 
 /* =========================================================================
